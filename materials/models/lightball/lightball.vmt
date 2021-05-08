@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/lightball/lightball"
+	"$bumpmap" "models/lightball/lightball_normal"
+	"$surfaceprop" "concrete_block"
+	"$reflectivity" "[.13 .13 .13]"
+}

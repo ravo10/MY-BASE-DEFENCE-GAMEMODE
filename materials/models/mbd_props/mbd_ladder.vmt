@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mbd_props/mbd_ladder"
+	"$bumpmap" "models/mbd_props/mbd_ladder_normal"
+	"$surfaceprop" "wood"
+	"$reflectivity" "[.1 .1 .1]"
+}

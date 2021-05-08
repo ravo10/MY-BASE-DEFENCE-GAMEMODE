@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/sotte_plate_fundament"
+	"$bumpmap" "models/mysterybox_bo3/sotte_plate_fundament_normal"
+	"$surfaceprop" "Wood_Panel"
+	"$reflectivity" "[.1 .1 .1]"
+}

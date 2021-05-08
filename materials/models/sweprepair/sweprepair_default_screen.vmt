@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/sweprepair/sweprepair_default_screen"
+	"$surfaceprop" "glass"
+	"$reflectivity" "[.95 .95 .95]"
+	"$selfillum" "1"
+}

@@ -1,0 +1,132 @@
+"my_base_defence"
+{
+	"base"		"base"
+	"title"		"My Base Defence"
+	"info"		"Create a base to protect yourself from the hord of enemies wanting to destroy you and your base!"
+	"version"	"0.0.2"
+	"maps"		"^mbd_|^gm_|^gmod_|^phys_"
+	"menusystem"	"1"
+	"workshopid"	""
+	"author_name"	"ravo (Norway) Rasmus >.)"
+
+	"settings"
+	{
+		1
+		{
+			"name"			"mbd_enableStrictMode"
+			"text"			"Strict Mode"
+			"help"			"Enables strict mode for MBD (normal). This will change the tool-menu and spawnmenu."
+			"type"			"Numeric"
+			"default"		"1"
+			"singleplayer" 	""
+		}
+		2
+		{
+			"name"			"mbd_howManyDropsNeedsToBePickedUpBeforeWaveEnd"
+			"text"			"Round/wave Drops (to pick up)"
+			"help"			"Define how many drops that needs to picked up before curr. wave ends, or else the game ends. >=3 = Disabled."
+			"type"			"Numeric"
+			"default"		"3"
+			"singleplayer" 	""
+		}
+		3
+		{
+			"name"			"mbd_turnOffSirenSoundStartGame"
+			"text"			"Disable Sound Effects"
+			"help"			"Disable the sound effect at the start of each new round/wave."
+			"type"			"Numeric"
+			"default"		"0"
+			"singleplayer" 	""
+		}
+		4
+		{
+			"name"			"mbd_countDownTimerAttack"
+			"text"			"Countdown (to start)"
+			"help"			"Countdown (in seconds) for the start of the next round/wave."
+			"type"			"Numeric"
+			"default"		"30"
+			"singleplayer" 	""
+		}
+		5
+		{
+			"name"			"mbd_countDownTimerEnd"
+			"text"			"Countdown (to end)"
+			"help"			"Countdown (in seconds) for the end of the current round/wave."
+			"type"			"Numeric"
+			"default"		"300"
+			"singleplayer" 	""
+		}
+		6
+		{
+			"name"			"mbd_npcLimit"
+			"text"			"NPC Spawner Limit"
+			"help"			"The amout before the NPC Spawner stops producing any more NPCs."
+			"type"			"Numeric"
+			"default"		"100"
+			"singleplayer" 	""
+		}
+		7
+		{
+			"name"			"mbd_superAdminsDontHaveToPay"
+			"text"			"Super Admin: Free Pass"
+			"help"			"Make it so Super Admins don't have to pay for anything."
+			"type"			"Numeric"
+			"default"		"1"
+			"singleplayer" 	""
+		}
+		8
+		{
+			"name"			"mbd_respawnTimeBeforeCanSpawnAgain"
+			"text"			"Time before Respawn Again (seconds) (After Player Death)"
+			"help"			"The time before a Player can respawn again after death in seconds... Does not affect Admins. < 0 == No Respawn. E.g. -1 or -100 etc."
+			"type"			"Numeric"
+			"default"		"5"
+			"singleplayer" 	""
+		}
+		9
+		{
+			"name"			"mbd_enableAutoScaleModelNPC"
+			"text"			"Makes the NPC's model bigger, smaller or normal when a new round starts."
+			"help"			"The NPC's that spawn from the NPC Spawner will get affected by this. It is random, and a random scale within a bigger or smaller scale. NPC's could also spawn in their normal model scale/size."
+			"type"			"Numeric"
+			"default"		"1"
+			"singleplayer" 	""
+		}
+		10
+		{
+			"name"			"mbd_enableHardEnemiesEveryThreeRound"
+			"text"			"Spawns more difficult enemies every three round, for a harder challenge."
+			"help"			"For now, it spawns one NPC Strider and a chopper or gunship."
+			"type"			"Numeric"
+			"default"		"1"
+			"singleplayer" 	""
+		}
+		11
+		{
+			"name"			"mbd_npcSpawnerMaxNPCRowCount"
+			"text"			"NPC Spawner Row Limit"
+			"help"			"Adjusts the max limit of the NPC Spawner spawn row, before it is reset."
+			"type"			"Numeric"
+			"default"		"21"
+			"singleplayer" 	""
+		}
+		12
+		{
+			"name"			"mbd_ladderLimit"
+			"text"			"Ladder limit per. player"
+			"help"			"Limits the amount of ladders a player can spawn; not including admins."
+			"type"			"Numeric"
+			"default"		"1"
+			"singleplayer" 	""
+		}
+		13
+		{
+			"name"			"mbd_disableHonkHornSoundEffect"
+			"text"			"Disable Vehicle Horn Sound"
+			"help"			"Disables the Vehicle Horn Sound Effect for everyone."
+			"type"			"Numeric"
+			"default"		"0"
+			"singleplayer" 	""
+		}
+	}
+}

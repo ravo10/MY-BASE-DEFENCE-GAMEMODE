@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/v_h_side_panel_stender"
+	"$bumpmap" "models/mysterybox_bo3/v_h_side_panel_stender_normal"
+	"$surfaceprop" "Wood"
+	"$reflectivity" "[.1 .1 .1]"
+}

@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/chain"
+	"$bumpmap" "models/mysterybox_bo3/chain_normal"
+	"$surfaceprop" "Chainlink"
+	"$reflectivity" "[.85 .85 .85]"
+}

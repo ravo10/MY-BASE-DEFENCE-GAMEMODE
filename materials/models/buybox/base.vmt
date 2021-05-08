@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/buybox/base"
+	"$bumpmap" "models/buybox/base_normal"
+	"$surfaceprop" "rock"
+	"$reflectivity" "[.1 .1 .1]"
+}

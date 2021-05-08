@@ -1,0 +1,32 @@
+-----------------------
+My Base Defence (all versions) | A gamemode for Garry's Mod | Based on Garry's Mod Sandbox
+-------- ----------- --
+----
+--
+-
+This gamemode (My Base Defence) is created by the user under alias "ravo (Norway)" (original creator) and
+connected to the original creator on Steam by SteamID: STEAM_0:1:18860056.
+---
+--
+Please do not copy or reuse code for other than private use without giving credit
+back to the original creator first; which is: STEAM_0:1:18860056 or/and "ravo (Norway)".
+--
+---
+Thanks! And, enjoy the gamemode .-)
+-----
+----
+---
+--
+-
+**NOTICE ABOUT THE REAL LICENSE USED HERE**::
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Every single line of code that is connected to "My Base Defence" gamemode for Garry's Mod and written by (which the creator knows which and has the rights to)                                                 |
+| the original creator (STEAM_0:1:18860056 "ravo (Norway)"), is using the license: Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/) |
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-
+--
+---
+----
+-----
+
+Sounds are from: http://soundbible.com

@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/tau"
+	"$bumpmap" "models/mysterybox_bo3/tau_normal"
+	"$surfaceprop" "Dirt"
+	"$reflectivity" "[.02 .02 .02]"
+}

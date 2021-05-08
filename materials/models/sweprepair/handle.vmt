@@ -1,0 +1,17 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/sweprepair/handle"
+	"$bumpmap" "models/sweprepair/handle_normal"
+	"$surfaceprop" "metal"
+	"$reflectivity" "[.2 .2 .2]"
+
+	$phong 1
+	$phongboost 1.2
+	$phongexponent 20
+	$phongfresnelranges "[0.1 .9 0.3]"
+	$basemapalphaphongmask 0
+	$envmap env_cubemap
+	$envmapfresnel 1
+	$envmapFresnelMinMaxExp "[0 5 .4]"
+	$color2 "[ 1 1 1.1 ]"
+}

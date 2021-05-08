@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/topp_text"
+	"$surfaceprop" "Arial"
+	"$selfillum" "1"
+	//"$selfillumtint" "[246 181 41 155]"
+}

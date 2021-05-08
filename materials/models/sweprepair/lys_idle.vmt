@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/sweprepair/lys_idle"
+	"$surfaceprop" "glass"
+	"$reflectivity" "[.8 .8 .8]"
+	"$selfillum" "1"
+}

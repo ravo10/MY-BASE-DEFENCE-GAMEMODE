@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/metall_plate_sylinder"
+	"$bumpmap" "models/mysterybox_bo3/metall_plate_sylinder_normal"
+	"$surfaceprop" "Metall"
+	"$reflectivity" "[.5 .5 .5]"
+}
+

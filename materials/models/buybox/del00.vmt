@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/buybox/del00"
+	"$bumpmap" "models/buybox/del00_normal"
+	"$surfaceprop" "metal"
+	"$reflectivity" "[.3 .3 .3]"
+}

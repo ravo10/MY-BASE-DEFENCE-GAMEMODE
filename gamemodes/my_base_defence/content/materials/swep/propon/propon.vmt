@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "swep/propon/propon"
+	"$surfaceprop" "metal" // Surfaceprop list found here: https://developer.valvesoftware.com/wiki/Surfaceprop
+}

@@ -1,0 +1,8 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/lekablokk_fundament"
+	"$bumpmap" "models/mysterybox_bo3/lekablokk_fundament_normal"
+	"$surfaceprop" "Concrete_Block"
+	"$reflectivity" "[.05 .05 .05]"
+}
+

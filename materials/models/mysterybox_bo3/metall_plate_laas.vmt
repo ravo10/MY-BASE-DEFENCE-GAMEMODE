@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/mysterybox_bo3/metall_plate_laas"
+	"$bumpmap" "models/mysterybox_bo3/metall_plate_laas_normal"
+	"$surfaceprop" "MetalPanel"
+	"$reflectivity" "[.35 .35 .35]"
+}

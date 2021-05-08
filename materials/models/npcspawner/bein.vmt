@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/npcspawner/bein"
+	"$bumpmap" "models/npcspawner/bein_normal"
+	"$surfaceprop" "rock"
+	"$reflectivity" "[.1 .1 .1]"
+}

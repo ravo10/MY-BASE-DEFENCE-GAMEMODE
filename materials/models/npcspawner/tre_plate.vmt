@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/npcspawner/tre_plate"
+	"$bumpmap" "models/npcspawner/tre_plate_normal"
+	"$surfaceprop" "Wood_Panel"
+	"$reflectivity" "[.1 .1 .1]"
+}

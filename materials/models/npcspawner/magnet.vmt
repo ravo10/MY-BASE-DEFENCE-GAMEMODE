@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/npcspawner/magnet"
+	"$bumpmap" "models/npcspawner/magnet_normal"
+	"$surfaceprop" "metal"
+	"$reflectivity" "[.6 .6 .6]"
+}

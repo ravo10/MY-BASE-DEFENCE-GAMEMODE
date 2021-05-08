@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/sweprepair/grill"
+	"$surfaceprop" "metal"
+	"$reflectivity" "[.3 .3 .3]"
+	"$selfillum" "1"
+}
