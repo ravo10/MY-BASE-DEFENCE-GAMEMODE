@@ -1,3 +1,14 @@
+# Features that can be added
+
+* The posiblility to enable AI spawns every e.g. 2, 9, 8, 10 sec. that is friendly AI. That will spawn at normal Spawn Point (register players on initial spawn, and use those spawn points.. + z*index 10 ) https://github.com/Facepunch/garrysmod/blob/28eb7cdf0d5a4a723a3a7a0283c8dba1ccd9bbc6/garrysmod/gamemodes/base/gamemode/player.lua#L405*L462
+* When open buybox, blur the screen a little for the player and darken (just paint a panel with HUD:... )
+* Add possiblity to shoot through World walls ( not to thick ) ( define what ammo can go through ) and NPCs. Use TraceLine with some logic and Player fowards Vector ..
+* Trace to entity on bullet hit ( client ) and spawn particle effects
+* Editable Tools menu in strict mode
+* Breath effect animaiton for player ( up/down )
+
+## Known bugs ( not fixed yet )
+
 # Stable
 
 ### 0.0.205 ( 08.05.21 )
@@ -285,14 +296,3 @@
 ### 2.3
 * Updated the alogrithm to the amount of enemies spawning each round (intensity). Max. 60 per player each round.
 * Updated the GUI for the lobby and the player screen
-
-# Features that can be added
-
-* The posiblility to enable AI spawns every e.g. 2, 9, 8, 10 sec. that is friendly AI. That will spawn at normal Spawn Point (register players on initial spawn, and use those spawn points.. + z*index 10) https://github.com/Facepunch/garrysmod/blob/28eb7cdf0d5a4a723a3a7a0283c8dba1ccd9bbc6/garrysmod/gamemodes/base/gamemode/player.lua#L405*L462
-* When open buybox, blur the screen a little for the player and darken (just paint a panel with HUD:...)
-* Add possiblity to shoot through World walls (not to thick) (define what ammo can go through) and NPCs. Use TraceLine with some logic and Player fowards Vector ..
-* Trace to entity on bullet hit (client) and spawn particle effects
-* Editable Tools menu in strict mode
-* Breath effect animaiton for player (up/down)
-
-## Known bugs ( not fixed yet )
