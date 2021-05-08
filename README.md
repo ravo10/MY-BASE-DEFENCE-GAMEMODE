@@ -1,11 +1,10 @@
-# The **UNOFFICIAL My Base Defence Gamemode** for Garry's Mod!
-*- Made by ravo Norway 🏔*
+# **My Base Defence Gamemode!**
+***The Original Unoffical Version :: My Base Defence **( 32/64-bit )** ::***
 
 ### Recommened Mounted Games:
 
 * **Half-Life 2: Episode One** (Zombine)
 * **Half-Life 2: Episode Two** (Jalopy)
-
 
 **You can now edit the spawn list (BuyBox/NPC) from the settings panel!**
 
@@ -15,8 +14,6 @@
 
 *Recommended age limit is +18, because of the extra gore added to the game.*
 *As for many FPS games, this gamemode might not be suitable for people with epilepsy.*
-
-**This is Version: **0.0.204**** :: My Base Defence **(32/64-bit)** ::
 
 ## What is M.B.D.?
 The Inspiration? To do a mix between **Garry's Mod Sandbox** and **Call of Duty: WaW: Zombies** - A *Build*, *Defend* and *Survive* Gamemode you can play with your friends agains enemy AI.
@@ -90,10 +87,10 @@ mbd_disableHonkHornSoundEffect
 ```
 **CLIENT**:
 ```lua
-mbd_disablePlayerTilt (0 or 1 (def.))
-mbd_PlayerColorEnhancerState (States: 0 (def.), 1, 2 (disabled) )
-mbd_disablePlayerBlurEffect (motion blur) (0 or 1 (def.))
-mbd_disablePlayerToyTownBlurEffect (0 or 1 (def.))
+mbd_disablePlayerTilt ( 0 or 1 ( def. ) )
+mbd_PlayerColorEnhancerState ( States: 0 ( def. ), 1, 2 ( disabled ) )
+mbd_disablePlayerBlurEffect ( motion blur ) ( 0 or 1 ( def. ) )
+mbd_disablePlayerToyTownBlurEffect ( 0 or 1 ( def. ) )
 ```
 ### **DOESN'T** SAVE WHEN CLOSING THE GAME:
 ```lua
@@ -118,8 +115,7 @@ mbd_mysterybox_bo3_ravo_disableAllParticlesEffects
 ```
 
 ### License:
-This addon is created by [ravo (Norway)](https://steamcommunity.com/sharedfiles/filedetails/?id=1647345157) or the uploader of this current viewed [Gamemode](https://steamcommunity.com/sharedfiles/filedetails/?id=2074331908) on Steam Workshop.
-All of the custom code created by the creator/uploader (this site), that is given for **My Base Defence (M.B.D.)**, is supplied under the: [CC BY-NC-SA 4.0 Licence](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en) If not specified otherwise.
+This addon is created by [ravo (Norway)](https://steamcommunity.com/sharedfiles/filedetails/?id=1647345157) or the uploader of this [Gamemode](https://steamcommunity.com/sharedfiles/filedetails/?id=2074331908) on Steam Workshop.
 
 **Copyright content:**
 
@@ -129,4 +125,4 @@ All of the custom code created by the creator/uploader (this site), that is give
 
 [PayPal - ravonorway](https://paypal.me/ravonorway)
 
-***Made in Norway.***
+***Made in Norway. - by ravo Norway 🏔***
