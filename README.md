@@ -1,5 +1,8 @@
+![My Base Defence GitHub](https://repository-images.githubusercontent.com/365612047/078c1480-b05d-11eb-9e15-e0b4115bc1fe)
 # **My Base Defence Gamemode!**
 ***The Original Unoffical Version :: My Base Defence **( 32/64-bit )** ::***
+
+**[My Base Defence Gamemode on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2074331908)**
 
 ### Recommened Mounted Games:
 
@@ -44,6 +47,8 @@ The Inspiration? To do a mix between **Garry's Mod Sandbox** and **Call of Duty:
 * Mechanics (and admins) can buy and spawn vehicles!
 * Custom quick button menu when pressing TAB (IN_SCORE). Here you can also see some other stats for current running wave/game
 * Auto. generated whitelist for spawnmenu, buybox and tools menu
+
+![NPC Spawner](https://steamuserimages-a.akamaihd.net/ugc/1014943649046399429/E9EB5BD2127B03F4AA14D330905E358A931997C3/?imw=637&imh=358&ima=fit)
 
 ## Get Started
 Enter the gamemode as an admin, and place preferraly a NPC Spawner (to spawn enemy AI) and a BuyBox Station (to be able to purchase stuff), and maybe a Mystery Box (you can disable particles - look under "ConVars"). Now wait for the countdown timer, or start the game manually through the settings panel/quick settings menu. The server needs atleast one admin to set the game up before being able to play. After this, the admin can leave the server and the game will be controlled automatically by the server.
