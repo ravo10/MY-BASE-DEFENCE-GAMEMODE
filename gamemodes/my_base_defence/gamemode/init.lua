@@ -11,8 +11,6 @@
 AddCSLuaFile( 'shared.lua' )
 AddCSLuaFile( 'cl_spawnmenu.lua' )
 AddCSLuaFile( 'cl_notice.lua' )
-AddCSLuaFile( 'cl_hints.lua' )
---include( 'cl_worldtips.lua' )
 AddCSLuaFile( 'cl_search_models.lua' )
 AddCSLuaFile( 'gui/IconEditor.lua' )
 
@@ -66,7 +64,6 @@ AddCSLuaFile( "spawnmenu/toolmenu.lua" )
 AddCSLuaFile( "spawnmenu/contextmenu.lua" )
 AddCSLuaFile( "spawnmenu/creationmenu.lua" )
 
-AddCSLuaFile( "cl_hints.lua" )
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "cl_notice.lua" )
 AddCSLuaFile( "cl_search_models.lua" )
@@ -917,10 +914,8 @@ AddCSLuaFile("timers/timers.lua")
 include("timers/timers.lua")
 -- HOOKS
 --
-AddCSLuaFile("hooks/hooks.shared.lua")
 AddCSLuaFile("hooks/cl_hooks.lua")
 AddCSLuaFile("hooks/hooks.lua")
-include("hooks/hooks.shared.lua")
 include("hooks/hooks.lua")
 
 HOOK_Initialize001()

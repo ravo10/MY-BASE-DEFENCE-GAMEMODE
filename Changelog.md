@@ -11,6 +11,10 @@
 
 # Stable
 
+### 0.0.2051 ( 09.05.21 )
+* Small bug fix for some empty uneeded files that needed to be removed
+* Added so the timer that updates enemies on map, only updates when the games is started ( or else 0 )
+
 ### 0.0.205 ( 08.05.21 )
 ***Allot of fine tuning of the important stuff - Better performance***
 * Enabled custom context menu as in default Sandbox

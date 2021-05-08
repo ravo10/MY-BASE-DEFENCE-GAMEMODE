@@ -39,7 +39,6 @@ gamemodes\my_base_defence\entities\entities\mbd_npc_spawner_all\shared.lua
 gamemodes\my_base_defence\entities\weapons\swep_prop_repair\shared.lua
 gamemodes\my_base_defence\entities\weapons\swep_vehicle_repair\shared.lua
 #
-gamemodes\my_base_defence\gamemode\cl_hints.lua
 gamemodes\my_base_defence\gamemode\cl_init.lua
 gamemodes\my_base_defence\gamemode\cl_notice.lua
 gamemodes\my_base_defence\gamemode\cl_search_models.lua

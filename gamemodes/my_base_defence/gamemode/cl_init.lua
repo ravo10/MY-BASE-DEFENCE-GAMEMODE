@@ -13,8 +13,6 @@ end
 AddCSLuaFile( 'shared.lua' )
 AddCSLuaFile( 'cl_spawnmenu.lua' )
 AddCSLuaFile( 'cl_notice.lua' )
---AddCSLuaFile( 'cl_hints.lua' )
---AddCSLuaFile( 'cl_worldtips.lua' )
 AddCSLuaFile( 'cl_search_models.lua' )
 AddCSLuaFile( 'gui/IconEditor.lua' )
 --
@@ -105,8 +103,6 @@ timeBeforePlayerCanSpawnSeconds = -1
 include( 'shared.lua' )
 include( 'cl_spawnmenu.lua' )
 include( 'cl_notice.lua' )
---include( 'cl_hints.lua' )
---include( 'cl_worldtips.lua' )
 include( 'cl_search_models.lua' )
 include( 'gui/IconEditor.lua' )
 --- -
@@ -1996,9 +1992,7 @@ AddCSLuaFile("timers/cl_timers.lua")
 include("timers/cl_timers.lua")
 -- HOOKS
 --
-AddCSLuaFile("hooks/hooks.shared.lua")
 AddCSLuaFile("hooks/cl_hooks.lua")
-include("hooks/hooks.shared.lua")
 include("hooks/cl_hooks.lua")
 -- SERVICE FOR THE GAME ITSELF (more related)
 --

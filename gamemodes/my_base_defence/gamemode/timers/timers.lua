@@ -16,26 +16,30 @@ timer.Create( "mbd:UpdateEnemiesAliveTotal001", 1, 0, function()
 
 	-- More efficient to just run every second
 
-	--
-	--- -
-	-- Do a count on how many enemies are actually alive (if mis-counted)
-	local allNPCSpawnerNPCs = GETAllValidNPCsWithinTheNPCTable()
-	local newNPCCount = 0
-	local totAmount = #allNPCSpawnerNPCs
+	if GameStarted then
+		
+		--
+		--- -
+		-- Do a count on how many enemies are actually alive (if mis-counted)
+		local allNPCSpawnerNPCs = GETAllValidNPCsWithinTheNPCTable()
+		local newNPCCount = 0
+		local totAmount = #allNPCSpawnerNPCs
 
-	for i,npc in pairs( allNPCSpawnerNPCs ) do
-		newNPCCount = newNPCCount + 1
+		for i,npc in pairs( allNPCSpawnerNPCs ) do
+			newNPCCount = newNPCCount + 1
 
-		if i == totAmount then
-			EnemiesAliveTotal = newNPCCount
-			--
-			--- Send to CLIENTS >>
-			net.Start("TotalAmountOfEnemies")
-				net.WriteInt(EnemiesAliveTotal, 9)
-			net.Broadcast()
+			if i == totAmount then
+				EnemiesAliveTotal = newNPCCount
+				--
+				--- Send to CLIENTS >>
+				net.Start("TotalAmountOfEnemies")
+					net.WriteInt(EnemiesAliveTotal, 9)
+				net.Broadcast()
+			end
 		end
-	end
-	
+
+	else EnemiesAliveTotal = 0 end
+
 end )
 -- -- -
 function isNPCFreezed(npc)
