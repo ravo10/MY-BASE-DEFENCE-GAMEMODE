@@ -128,5 +128,14 @@
 			"default"		"0"
 			"singleplayer" 	""
 		}
+		14
+		{
+			"name"			"mbd_alwaysGiveFallbackSweps"
+			"text"			"Always give Fallback SWEPs"
+			"help"			"Always give the fallback SWEPs. This occurs naturally when the server does not have the content packs installed."
+			"type"			"Numeric"
+			"default"		"0"
+			"singleplayer" 	""
+		}
 	}
 }

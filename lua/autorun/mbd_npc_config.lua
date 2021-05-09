@@ -208,14 +208,14 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
             return EnemiesAliveTotal
         end
         function MBDAddToHowManyValidNPCsOnMapNumberNPCSpawnerStatic(npc)
-            if EnemiesAliveTotal >= GetConVar("mbd_npcLimit"):GetInt() then
-                if npc and npc:IsValid() then npc:Remove() end return EnemiesAliveTotal
+            if EnemiesAliveTotal > GetConVar("mbd_npcLimit"):GetInt() then
+                if npc and npc:IsValid() then npc:Remove() end return false
             end
 
             local newValue = EnemiesAliveTotal + 1
             if newValue > EnemiesAliveTotal then EnemiesAliveTotal = newValue end
 
-            return newValue
+            return true
         end
         function MBDSubtractToHowManyValidNPCsOnMapNumberNPCSpawnerStatic()
             EnemiesAliveTotal = EnemiesAliveTotal - 1
@@ -318,7 +318,8 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         end
         function metaTableNPCRef:FinishNPCSpawnFromNPCSpawner()
             -- Add to COUNTER >>
-            MBDAddToHowManyValidNPCsOnMapNumberNPCSpawnerStatic(self)
+            local didAdd = MBDAddToHowManyValidNPCsOnMapNumberNPCSpawnerStatic( self )
+            if not didAdd then return end
 
             local timerID = "mbd:onNPCSpawnEffect"..self:EntIndex()
 			local effectOn = false

@@ -652,13 +652,13 @@ function maybeSpawnPlayerFromClass(traceID, pl, newClassInt, currClassInt, mustC
 
 	if newClassInt == -1 then
 		pl:MBDStripPlayer()
-		pl:MBDGivePlayer("1")
+		pl:MBDGivePlayerDefaultNotClassRelated("1")
 
 		-- To be sure
 		timer.Simple(3, function()
 			if pl and pl:IsValid() and pl:GetNWInt("classInt", -1) == -1 then
 				pl:MBDStripPlayer()
-				pl:MBDGivePlayer("2")
+				pl:MBDGivePlayerDefaultNotClassRelated("2")
 			end
 		end)
 	end
@@ -722,7 +722,7 @@ function maybeSpawnPlayerFromClass(traceID, pl, newClassInt, currClassInt, mustC
 					pl:SetNWString("classnameLobby", "No Class (Pick One)")
 
 					-- Give the basics again (he was stripped)
-					pl:MBDGivePlayer("3")
+					pl:MBDGivePlayerDefaultNotClassRelated("3")
 					--
 					--
 					-- ADJUST THE OLD VALUE IN PLAYER CLASSES AVAILABLE
@@ -818,7 +818,7 @@ function maybeSpawnPlayerFromClass(traceID, pl, newClassInt, currClassInt, mustC
 			local timer001 = "mbd:GivePlayerCorrectStuffTimer001"..pl:UniqueID()
 			timer.Create(timer001, 1, 0, function()
 				if pl and pl:IsValid() then
-					timer.Remove(timer001) pl:MBDGivePlayerCorrectStuff(traceID, newClassInt)
+					timer.Remove(timer001) pl:MBDGivePlayerCorrectStuffClassRelated(traceID, newClassInt)
 				end
 			end)
 		end

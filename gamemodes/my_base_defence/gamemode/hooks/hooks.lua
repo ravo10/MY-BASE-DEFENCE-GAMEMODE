@@ -342,7 +342,7 @@ function playerInitialSpawn(pl)
 					amountOfPlayersChanged()
 					--
 					pl:MBDStripPlayer()
-					pl:MBDGivePlayer("4")
+					pl:MBDGivePlayerDefaultNotClassRelated("4")
 					-- -
 					-- FIRST LOAD...
 					if (pl:GetNWBool("PlayerFirstLoad", true)) then

@@ -864,9 +864,9 @@ function SWEP:Think()
                 if TypeOfSound == "full" and self:GetPlayFullSound() then
                     self:SetPlayFullSound(false)
 
-                    local soundTypeString = math.random( 1, 4 )
+                    local soundTypeString = math.random( 1, 3 )
                     local soundString = "swep/prop_ok0.wav"
-                    if soundTypeString == 4 then soundString = "swep/prop_ok2.wav" end
+                    if soundTypeString == 3 then soundString = "swep/prop_ok2.wav" end
 
                     MBDSetSoundAndEntity(
                         self,

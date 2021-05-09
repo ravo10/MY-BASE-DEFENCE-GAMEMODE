@@ -12,6 +12,12 @@
 
 # Stable
 
+### 0.0.2053 ( 09.05.21 )
+* Fixed problem with NPC Spawner trying to spawn NPCs, when the total amount is reached
+* Added "weapon_fist" as a default SWEP that will be givien on init.
+* Added so that if the server does not have the content packs installed, it will use default fallback SWEPs that GMod has
+* Added new ConVar `mbd_alwaysGiveFallbackSweps` if the server wants players to always receive fallback SWEPs
+
 ### 0.0.2052 ( 09.05.21 )
 * New unexpected bug fix on NPC spawn, where the NPC Class could not get fetched
 * Fixed so that the merged NPC class list wil not have duplicates

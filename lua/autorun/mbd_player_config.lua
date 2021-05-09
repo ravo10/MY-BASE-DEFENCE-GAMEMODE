@@ -1,6 +1,7 @@
 if engine.ActiveGamemode() == "my_base_defence" then
     local metaTablePlayerRef = FindMetaTable("Player")
     if SERVER or CLIENT then
+
         -- << FOR M.B.D. >> --
         function MBDGetClassNameForPlayerClass(classInt, NiceName, upperCase)
             local setName = function(className)
@@ -219,22 +220,42 @@ if engine.ActiveGamemode() == "my_base_defence" then
         end
     end
     if SERVER then
+
+        -- To later check if weapon class is installed on server
+        local tempLoadedServerWeaponClassList = list.Get("Weapon")
+        local loadedServerWeaponClassList = {}
+        for wepKey, wepTable in pairs( tempLoadedServerWeaponClassList ) do
+            class = wepTable[ "ClassName" ] if not class then class = wepKey end
+
+            table.insert( loadedServerWeaponClassList, class )
+        end
+
+        local function CheckIfWeaponClassExistsOnServer( wepClass )
+
+            if table.HasValue( loadedServerWeaponClassList, wepClass ) then return true end
+
+            return false
+
+        end
+
         -- Get metadata for Players
         function metaTablePlayerRef:MBDStripPlayer()
             self:StripWeapons()
             self:StripAmmo()
         end
         -- Basic Weapons
-        function metaTablePlayerRef:MBDGivePlayer(traceID)
-            -- print("\"metaTablePlayerRef:MBDGivePlayer\" traceID:", traceID)
+        function metaTablePlayerRef:MBDGivePlayerDefaultNotClassRelated(traceID)
+            -- print("\"metaTablePlayerRef:MBDGivePlayerDefaultNotClassRelated\" traceID:", traceID)
             
             -- Hent klassen via NWVariabel, og gi tilsvarende våpen
-                self:Give("gmod_tool")
-                self:Give("weapon_physgun")
-                self:Give("weapon_physcannon")
+                self:Give( "gmod_tool" )
+                self:Give( "weapon_physgun" )
+                self:Give( "weapon_physcannon" )
 
-                self:Give("swep_prop_repair")
-                if self:IsSuperAdmin() then self:Give("swep_vehicle_repair") end
+                self:Give( "swep_prop_repair")
+                if self:IsSuperAdmin() then self:Give( "swep_vehicle_repair" ) end
+
+                self:Give( "weapon_fists" )
 
                 self:SwitchToDefaultWeapon()
         end
@@ -279,7 +300,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                 if not GameStarted or spawnFromFunction then self:Spawn() end
 
                 -- GIVE BASICS..
-                if not shouldNotGive then self:MBDGivePlayer("7") end
+                if not shouldNotGive then self:MBDGivePlayerDefaultNotClassRelated("7") end
             end
 
             if noTimer then unspectate() else
@@ -293,12 +314,16 @@ if engine.ActiveGamemode() == "my_base_defence" then
 
             pl:GiveAmmo(amount, ammoType, true)
         end
-        function metaTablePlayerRef:MBDGivePlayerCorrectStuff(traceID, newClassInt)
-            -- print("MBDGivePlayerCorrectStuff TraceID:", traceID, self, newClassInt)
+        function metaTablePlayerRef:MBDGivePlayerCorrectStuffClassRelated(traceID, newClassInt)
+            -- print("MBDGivePlayerCorrectStuffClassRelated TraceID:", traceID, self, newClassInt)
         
             local rifleAmmoAmount = 61
             local shotgunAmmoAmount = 16
             local pistolAmmoAmount = 21
+
+            local SWEPClasses = {}
+            local SWEPClassesFull = {}
+            local ammo = {}
 
             -- Give player his class weapons
             local i = 1 GiveSlowly = function(_table, classInt)
@@ -307,7 +332,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                 -- Settings:
                 local WaitTime = 0.6 -- Seconds
                 
-                if self and self:IsValid() and self:GetNWInt("classInt", -1) == classInt then self:Give(swepClass) end
+                if self and self:IsValid() and self:GetNWInt("classInt", -1) == classInt and swepClass then self:Give(swepClass) end
                 -- Wait a little...
                 timer.Simple(WaitTime, function()
                     if !self or ( self and !self:IsValid() ) then return end
@@ -315,11 +340,49 @@ if engine.ActiveGamemode() == "my_base_defence" then
                     if self:GetNWInt("classInt", -1) == -1 then
                         -- Stop - Strip and give default
                         self:MBDStripPlayer()
-                        self:MBDGivePlayer("5")
+                        self:MBDGivePlayerDefaultNotClassRelated("5")
                     elseif _table and i <= #_table then GiveSlowly(_table, classInt) end
                 end)
             end
-            local GivePlayerSWEP = function(tableSWEPClasses) GiveSlowly(tableSWEPClasses, newClassInt) end
+            local GivePlayerSWEP = function( tableSWEPClasses ) GiveSlowly(tableSWEPClasses, newClassInt) end
+            local MaybeGivePlayerFallbackSWEPClass = function ( wepClassMain, wepClassFallback )
+
+                -- Check if it exists on server...
+                if GetConVar( "mbd_alwaysGiveFallbackSweps" ):GetInt() == 0 and CheckIfWeaponClassExistsOnServer( wepClassMain ) then
+
+                    return { wepClassMain, false }
+
+                end
+
+                return { wepClassFallback, true }
+
+            end
+            local MaybeGivePlayerFallbackAmmoTypes = function ( ammoTypes )
+
+                local newAmmoTypeTable = {}
+
+                for _, ammoDataWithFallbackKeyAndAmmoType in pairs( ammoTypes ) do
+
+                    -- [ amount, originalAmmoType, 'SWEPClasses' KEY ID, Fallback Ammo Type ]
+                    if (
+
+                        SWEPClassesFull[ ammoDataWithFallbackKeyAndAmmoType[ 3 ] ] and
+                        istable( SWEPClassesFull[ ammoDataWithFallbackKeyAndAmmoType[ 3 ] ] ) and
+                        SWEPClassesFull[ ammoDataWithFallbackKeyAndAmmoType[ 3 ] ][ 1 ] and
+                        SWEPClassesFull[ ammoDataWithFallbackKeyAndAmmoType[ 3 ] ][ 2 ]
+
+                    ) then
+
+                        -- Use the fallback ammo type
+                        table.insert( newAmmoTypeTable, { ammoDataWithFallbackKeyAndAmmoType[ 1 ], ammoDataWithFallbackKeyAndAmmoType[ 4 ] } )
+
+                    else table.insert( newAmmoTypeTable, { ammoDataWithFallbackKeyAndAmmoType[ 1 ], ammoDataWithFallbackKeyAndAmmoType[ 2 ] } ) end
+
+                end
+
+                return newAmmoTypeTable
+
+            end
 
             -- Try for 20 seconds
             local waitUntilNext = 0.1
@@ -327,107 +390,151 @@ if engine.ActiveGamemode() == "my_base_defence" then
             local function checkIfValid()
                 if tries >= 0 and (
                     !self.MBDStripPlayer or
-                    !self.MBDGivePlayer or
+                    !self.MBDGivePlayerDefaultNotClassRelated or
                     !self.Give or
                     !giveAmmo
                 ) then tries = (tries - 1) timer.Simple(waitUntilNext, function() checkIfValid() end) elseif (
                     self.MBDStripPlayer and
-                    self.MBDGivePlayer and
+                    self.MBDGivePlayerDefaultNotClassRelated and
                     self.Give and
                     giveAmmo
                 ) then
                     -- Strip again for security...
                     self:MBDStripPlayer()
-                    self:MBDGivePlayer("6")
+                    self:MBDGivePlayerDefaultNotClassRelated("6")
                     -- -- -
                     ---
                     --- GIVE PLAYER..
                     --
+
                     if (newClassInt == 0) then
+                        local swepClasses = {
+                            -- SIDE ARMS
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_deagle", "weapon_357" ),
+                            -- MAIN
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_rk95", "weapon_ar2" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_g36c", nil ),
+                            MaybeGivePlayerFallbackSWEPClass( "weapon_slam", "weapon_slam" )
+                        }
+
+                        for _, classData in pairs( swepClasses ) do
+
+                            table.insert( SWEPClasses, classData[ 1 ] )
+                            table.insert( SWEPClassesFull, classData )
+
+                        end
+
                         -- ENGINEER
-                        GivePlayerSWEP(
-                            {
-                                -- SIDE ARMS
-                                "mbd_fas2_machete",
-                                "mbd_fas2_deagle",
-                                -- MAIN
-                                "mbd_fas2_rk95",
-                                "mbd_fas2_g36c"
-                            }
-                        )
-        
+
                         -- Ammo --
-                        giveAmmo(self, pistolAmmoAmount, ".50 AE")
-                        giveAmmo(self, rifleAmmoAmount, "7.62x39MM")
-                        giveAmmo(self, rifleAmmoAmount, "5.56x45MM")
-                        
+                        local ammoTypes = {
+                            { pistolAmmoAmount, ".50 AE", 2, "357" },
+                            { rifleAmmoAmount, "7.62x39MM", 3, "AR2" },
+                            { rifleAmmoAmount, "5.56x45MM", nil, nil }
+                        }
+
+                        ammo = MaybeGivePlayerFallbackAmmoTypes( ammoTypes )
                     elseif (newClassInt == 1) then
-                        -- MECHANIC
-                        GivePlayerSWEP(
-                            {
-                                -- SIDE ARMS
-                                "mbd_fas2_dv2",
-                                "mbd_fas2_p226",
-                                -- MAIN
-                                "mbd_fas2_m67",
-                                "mbd_fas2_an94",
-                                "mbd_fas2_m24",
-                                -- UTILITIES
-                                "mbd_fas2_ammobox",
-                                -- Tools
-                                "swep_vehicle_repair"
-                            }
-                        )
-        
-                        -- Ammo --
-                        giveAmmo(self, pistolAmmoAmount, ".357 SIG")
-                        giveAmmo(self, rifleAmmoAmount, "5.45x39MM")
-                        giveAmmo(self, pistolAmmoAmount, "7.62x51MM")
-        
-                    elseif (newClassInt == 2) then
-                        -- MEDIC
-                        GivePlayerSWEP(
-                            {
-                                -- SIDE ARMS
-                                "mbd_fas2_machete",
-                                "mbd_fas2_ots33",
-                                -- MAIN
-                                "mbd_fas2_mp5sd6",
-                                "mbd_fas2_m3s90",
-                                -- UTILITIES
-                                "mbd_fas2_ifak"
-                            }
-                        )
-        
-                        -- Ammo --
-                        giveAmmo(self, pistolAmmoAmount, "9x18MM")
-                        giveAmmo(self, rifleAmmoAmount, "9x19MM")
-                        giveAmmo(self, pistolAmmoAmount, "12 Gauge")
+                        local swepClasses = {
+                            -- SIDE ARMS
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_dv2", "weapon_crowbar" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_p226", "weapon_pistol" ),
+                            -- MAIN
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m67", "weapon_frag" ), -- grenade
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_an94", "weapon_ar2" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m24", "weapon_crossbow" ),
+                            -- UTILITIES
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ammobox", "weapon_bugbait" ),
+                            -- Tools
+                            MaybeGivePlayerFallbackSWEPClass( "swep_vehicle_repair", nil )
+                        }
                         
-                    elseif (newClassInt == 3) then
-                        -- THE TERMINATOR
-                        GivePlayerSWEP(
-                            {
-                                -- SIDE ARMS
-                                "mbd_fas2_machete",
-                                "mbd_fas2_ragingbull",
-                                -- MAIN
-                                "mbd_fas2_m67", -- grenade
-                                "mbd_fas2_rem870",
-                                "mbd_fas2_mac11",
-                                "mbd_fas2_ak47",
-                                -- UTILITIES
-                                "mbd_fas2_ammobox"
-                            }
-                        )
-        
+                        for _, classData in pairs( swepClasses ) do
+
+                            table.insert( SWEPClasses, classData[ 1 ] )
+                            table.insert( SWEPClassesFull, classData )
+
+                        end
+
+                        -- MECHANIC
+
                         -- Ammo --
-                        giveAmmo(self, pistolAmmoAmount, ".454 Casull")
-                        giveAmmo(self, pistolAmmoAmount, "12 Gauge")
-                        giveAmmo(self, rifleAmmoAmount, ".380 ACP")
-                        giveAmmo(self, rifleAmmoAmount, "7.62x39MM")
+                        local ammoTypes = {
+                            { pistolAmmoAmount, ".357 SIG", 2, "Pistol" },
+                            { rifleAmmoAmount, "5.45x39MM", 4, "AR2" },
+                            { pistolAmmoAmount, "7.62x51MM", 5, "XBowBolt" }
+                        }
+
+                        ammo = MaybeGivePlayerFallbackAmmoTypes( ammoTypes )
+                    elseif (newClassInt == 2) then
+                        local swepClasses = {
+                            -- SIDE ARMS
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ots33", "weapon_pistol" ),
+                            -- MAIN
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_mp5sd6", "weapon_smg1" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m3s90", "weapon_shotgun" ),
+                            -- UTILITIES
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ifak", "weapon_medkit" )
+                        }
+                        
+                        for _, classData in pairs( swepClasses ) do
+
+                            table.insert( SWEPClasses, classData[ 1 ] )
+                            table.insert( SWEPClassesFull, classData )
+
+                        end
+                        
+                        -- MEDIC
+
+                        -- Ammo --
+                        local ammoTypes = {
+                            { pistolAmmoAmount, "9x18MM", 2, "Pistol" },
+                            { rifleAmmoAmount, "9x19MM", 3, "SMG1" },
+                            { pistolAmmoAmount, "12 Gauge", 4, "Buckshot" }
+                        }
+
+                        ammo = MaybeGivePlayerFallbackAmmoTypes( ammoTypes )
+                    elseif (newClassInt == 3) then
+                        local swepClasses = {
+                            -- SIDE ARMS
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ragingbull", "weapon_357" ),
+                            -- MAIN
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m67", "weapon_frag" ), -- grenade
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_rem870", "weapon_shotgun" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_mac11", "weapon_smg1" ),
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ak47", "weapon_ar2" ),
+                            -- UTILITIES
+                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ammobox", nil )
+                        }
+                        
+                        for _, classData in pairs( swepClasses ) do
+
+                            table.insert( SWEPClasses, classData[ 1 ] )
+                            table.insert( SWEPClassesFull, classData )
+
+                        end
+                        
+                        -- THE TERMINATOR
+
+                        -- Ammo --
+                        local ammoTypes = {
+                            { pistolAmmoAmount, ".454 Casull", 2, "357" },
+                            { pistolAmmoAmount, "12 Gauge", 4, "Buckshot" },
+                            { rifleAmmoAmount, ".380 ACP", 5, "SMG1" },
+                            { rifleAmmoAmount, "7.62x39MM", 6, "AR2" }
+                        }
+
+                        ammo = MaybeGivePlayerFallbackAmmoTypes( ammoTypes )
                     end
-                    
+
+                    -- Give
+                    -- SWEPS
+                    GivePlayerSWEP( SWEPClasses )
+                    -- Ammo
+                    for _, ammoData in pairs( ammo ) do giveAmmo( self, ammoData[ 1 ], ammoData[ 2 ] ) end
                     --
                     -- Send new data to CLIENTS
                     net.Start("PlayersClassData")

@@ -89,6 +89,7 @@ mbd_enableHardEnemiesEveryThreeRound
 mbd_ladderLimit
 mbd_npcSpawnerMaxNPCRowCount
 mbd_disableHonkHornSoundEffect
+mbd_alwaysGiveFallbackSweps
 ```
 **CLIENT**:
 ```lua
