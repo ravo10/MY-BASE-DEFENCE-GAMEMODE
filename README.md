@@ -4,7 +4,15 @@
 
 **[My Base Defence Gamemode on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2074331908)**
 
-### Recommened Mounted Games:
+### *You can install Optional Content Packs for many different SWEPs!*
+* [Content Pack 1 of 3](https://steamcommunity.com/sharedfiles/filedetails/?id=1716416721)
+* [Content Pack 2 of 3](https://steamcommunity.com/sharedfiles/filedetails/?id=1716419608)
+* [Content Pack 3 of 3](https://steamcommunity.com/sharedfiles/filedetails/?id=1716420640)
+
+### >> If you mess up some settings, just delete the related folder:
+***...\garrysmod\data\my_base_defence\\\*folder_name\****
+
+### Recommened Mounted Games
 
 * **Half-Life 2: Episode One** (Zombine)
 * **Half-Life 2: Episode Two** (Jalopy)
