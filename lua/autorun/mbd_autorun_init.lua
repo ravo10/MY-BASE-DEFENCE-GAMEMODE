@@ -2,7 +2,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
     AddCSLuaFile()
 
     -- Important to update, to visually notify users
-    MBDTextCurrentVersion = "Stable 0.0.2051"
+    MBDTextCurrentVersion = "Stable 0.0.2052"
     MBDRoot_folder_path = "my_base_defence" -- Used for custom spawn lists etc.
 
     if CLIENT then

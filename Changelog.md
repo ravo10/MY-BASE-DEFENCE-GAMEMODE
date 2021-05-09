@@ -8,8 +8,13 @@
 * Breath effect animaiton for player ( up/down )
 
 ## Known bugs ( not fixed yet )
+* -
 
 # Stable
+
+### 0.0.2052 ( 09.05.21 )
+* New unexpected bug fix on NPC spawn, where the NPC Class could not get fetched
+* Fixed so that the merged NPC class list wil not have duplicates
 
 ### 0.0.2051 ( 09.05.21 )
 * Small bug fix for some empty uneeded files that needed to be removed

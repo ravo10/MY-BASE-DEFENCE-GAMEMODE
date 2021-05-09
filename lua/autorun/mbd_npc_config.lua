@@ -76,8 +76,12 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
                 if i == maxI then return NPCclass end
             end
         end
-        function GETCorrectNPCClassFromKey(NPCKey)
-            return MBDCompleteCurrNPCList[NPCKey]["Class"]
+        function GETCorrectNPCClassFromKey( NPCKey )
+
+            local class = MBDCompleteCurrNPCList[ NPCKey ] -- Can happen sometimes...
+            if not class then class = NPCKey else class = MBDCompleteCurrNPCList[ NPCKey ][ "Class" ] end
+
+            return class
         end
         function GETMaybeCustomNPCKeyFromNPCClass(NPCclass)
             if !MBDCompleteCurrNPCList or !MBDCustomKeyToModelNPCs or !NPCclass then return NPCclass end
@@ -134,6 +138,15 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
             table.Add(everyNPCClassListMerged, newAllowedCombinesTable)
             table.Add(everyNPCClassListMerged, newAllowedZombiesTable)
             table.Add(everyNPCClassListMerged, other)
+
+            -- Remove duplicates
+            local tempEveryNPCTable = {}
+            for _, npcClass in pairs( everyNPCClassListMerged ) do
+                if not table.HasValue( tempEveryNPCTable, npcClass ) then table.insert( tempEveryNPCTable, npcClass ) end
+
+                -- Save
+                if _ == #everyNPCClassListMerged then everyNPCClassListMerged = tempEveryNPCTable end
+            end
 
             if SERVER then
                 net.Start("mbd_updateTheEnemyNPCTableThatNPCSpawnerUse")
@@ -376,9 +389,9 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
             -- LIKE Feelz for every NPC class in the merged list of every possible spawned NPC connected to M.B.D. Spawner and it's NPCs
             for _,theNPCWillLikeThisNPCKey in pairs(everyNPCClassListMerged) do
 
-                local NPCClass = GETCorrectNPCClassFromKey(theNPCWillLikeThisNPCKey) if NPCClass and self:GetClass() != NPCClass then
+                local NPCClass = GETCorrectNPCClassFromKey( theNPCWillLikeThisNPCKey ) if NPCClass and self:GetClass() != NPCClass then
                     -- print(self, "==> SHOULD LIKE CLASS:", NPCClass)
-                    self:AddRelationship(NPCClass.." D_NU 9")
+                    self:AddRelationship( NPCClass .. " D_NU 9" )
                 end
 
             end
