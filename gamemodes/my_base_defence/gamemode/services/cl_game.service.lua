@@ -324,36 +324,6 @@ local function produserOydelegelseProppen( destructionProp, parentPropAngles, pa
 	destructionProp:Spawn()
 	destructionProp:SetRenderMode( RENDERMODE_TRANSALPHA )
 
-	--[[ local ekstra_energi = parentPropInertia * math.random(0.5, 1.5)
-
-	local velX = (parentPropVelocity.x * -1) * math.random(0.7, 1.2)
-	local velY = (parentPropVelocity.y * -1) * math.random(0.7, 1.2)
-	local velZ = (parentPropVelocity.z * -1) * math.random(0.7, 1.2)
-	--
-	local velX_ang = (parentPropAngleVelocity.x * -1) * math.random(0.7, 1.1)
-	local velY_ang = (parentPropAngleVelocity.y * -1) * math.random(0.7, 1.1)
-	local velZ_ang = (parentPropAngleVelocity.z * -1) * math.random(0.7, 1.1)
-	--
-	if velX <= 0 then velX = 1 end
-	if velY <= 0 then velY = 1 end
-	if velZ <= 0 then velZ = 1 end
-	--
-	if velX_ang <= 0 then velX_ang = 1 end
-	if velY_ang <= 0 then velY_ang = 1 end
-	if velZ_ang <= 0 then velZ_ang = 1 end
-
-
-	destructionProp:GetPhysicsObject():AddVelocity( Vector(
-		velX + ekstra_energi.x,
-		velX + ekstra_energi.y,
-		velX + ekstra_energi.z
-	) )
-	destructionProp:GetPhysicsObject():AddAngleVelocity( Vector(
-		velX_ang + ekstra_energi.x,
-		velY_ang + ekstra_energi.y,
-		velZ_ang + ekstra_energi.z
-	) ) ]]
-
 end
 net.Receive( "mbd:SpawnDestructionProps", function()
 

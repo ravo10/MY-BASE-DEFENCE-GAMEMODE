@@ -12,6 +12,10 @@
 
 # Stable
 
+### 0.0.2054 ( 09.05.21 )
+* Fixed a bug with loading the SWEPs list for checking if the Player should receive a fallback SWEP or not
+* Fixed a critical bug where the Mechanics class could not open the Vehicles menu
+
 ### 0.0.2053 ( 09.05.21 )
 * Fixed problem with NPC Spawner trying to spawn NPCs, when the total amount is reached
 * Added "weapon_fist" as a default SWEP that will be givien on init.

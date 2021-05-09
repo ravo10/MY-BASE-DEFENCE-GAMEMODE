@@ -817,7 +817,7 @@ function maybeSpawnPlayerFromClass(traceID, pl, newClassInt, currClassInt, mustC
 
 			local timer001 = "mbd:GivePlayerCorrectStuffTimer001"..pl:UniqueID()
 			timer.Create(timer001, 1, 0, function()
-				if pl and pl:IsValid() then
+				if pl and pl:IsValid() and MBDLoadedServerWeaponClassList then
 					timer.Remove(timer001) pl:MBDGivePlayerCorrectStuffClassRelated(traceID, newClassInt)
 				end
 			end)

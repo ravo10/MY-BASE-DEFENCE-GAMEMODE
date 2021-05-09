@@ -1,5 +1,25 @@
 if engine.ActiveGamemode() == "my_base_defence" then
     local metaTablePlayerRef = FindMetaTable("Player")
+
+    -- To later check if weapon class is installed on server
+    MBDLoadedServerWeaponClassList = nil
+    timer.Simple( 5, function()
+
+        local tempLoadedServerWeaponClassList = list.Get( "Weapon" )
+        local tempLoadedServerWeaponClassListLength = #table.GetKeys( tempLoadedServerWeaponClassList )
+        local newTable = {}
+
+        local _i = 0
+        for wepKey, wepTable in pairs( tempLoadedServerWeaponClassList ) do
+            class = wepTable[ "ClassName" ] if not class then class = wepKey end
+
+            table.insert( newTable, class )
+
+            _i = _i + 1 if _i == tempLoadedServerWeaponClassListLength then MBDLoadedServerWeaponClassList = newTable end
+        end
+
+    end )
+
     if SERVER or CLIENT then
 
         -- << FOR M.B.D. >> --
@@ -221,18 +241,9 @@ if engine.ActiveGamemode() == "my_base_defence" then
     end
     if SERVER then
 
-        -- To later check if weapon class is installed on server
-        local tempLoadedServerWeaponClassList = list.Get("Weapon")
-        local loadedServerWeaponClassList = {}
-        for wepKey, wepTable in pairs( tempLoadedServerWeaponClassList ) do
-            class = wepTable[ "ClassName" ] if not class then class = wepKey end
-
-            table.insert( loadedServerWeaponClassList, class )
-        end
-
         local function CheckIfWeaponClassExistsOnServer( wepClass )
 
-            if table.HasValue( loadedServerWeaponClassList, wepClass ) then return true end
+            if table.HasValue( MBDLoadedServerWeaponClassList, wepClass ) then return true end
 
             return false
 
@@ -348,7 +359,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
             local MaybeGivePlayerFallbackSWEPClass = function ( wepClassMain, wepClassFallback )
 
                 -- Check if it exists on server...
-                if GetConVar( "mbd_alwaysGiveFallbackSweps" ):GetInt() == 0 and CheckIfWeaponClassExistsOnServer( wepClassMain ) then
+                if GetConVar( "mbd_alwaysGiveFallbackSweps" ):GetInt() <= 0 and CheckIfWeaponClassExistsOnServer( wepClassMain ) then
 
                     return { wepClassMain, false }
 

@@ -1979,7 +1979,7 @@ function HOOK_HUDPaint001()
 			end
 
 			-- ONLY for MECHANIC (or ADMIN)
-			if !isPlayerSpectating and ( LocalPlayer():MBDShouldGetTheAdminBenefits(true) or LocalPlayer():GetNWInt("classname", "") == "mechanic" ) then
+			if !isPlayerSpectating and ( LocalPlayer():MBDShouldGetTheAdminBenefits(true) or string.lower( LocalPlayer():GetNWString("classname", "") ) == "mechanic" ) then
 				-- - -
 				-- - Quick Vechicle button:
 				if ( !quickMenuButtonVehicle or ( quickMenuButtonVehicle and !quickMenuButtonVehicle:IsValid() ) ) then
