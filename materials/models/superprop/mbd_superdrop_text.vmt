@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/superprop/mbd_superdrop_text"
+	"$bumpmap" "models/superprop/mbd_superdrop_text_normal"
+	"$surfaceprop" "Arial"
+	"$selfillum" "1"
+}

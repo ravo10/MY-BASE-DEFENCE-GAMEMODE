@@ -23,43 +23,44 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
 		end
 
 		local IgnoreTheseNPCClasses = {
-			"npc_bullseye",
-			"mbd_npc_bullseye",
-			"npc_grenade_frag",
+			[ "npc_bullseye" ] = "npc_bullseye",
+			[ "mbd_npc_bullseye" ] = "mbd_npc_bullseye",
+			[ "npc_grenade_frag" ] = "npc_grenade_frag",
 			--[[ These can spawn inst. from dead zombies... So don't remove them ]]
-			"npc_headcrab",
-			"npc_headcrab_black",
-			"npc_headcrab_poison",
-			"npc_headcrab_fast"
+			[ "npc_headcrab" ] = "npc_headcrab",
+			[ "npc_headcrab_black" ] = "npc_headcrab_black",
+			[ "npc_headcrab_poison" ] = "npc_headcrab_poison",
+			[ "npc_headcrab_fast" ] = "npc_headcrab_fast"
 		}
 		local IgnoreTheseNPCBullseyes = {
-			"npc_bullseye",
-			"mbd_npc_bullseye"
+			[ "npc_bullseye" ] = "npc_bullseye",
+			[ "mbd_npc_bullseye" ] = "mbd_npc_bullseye"
 		}
 		local IgnoreTheseNPCColorCheck = {
-			"env_",
-			"grenade",
-			"instanced_scripted_scene",
-			"npc_bullseye",
-			"mbd_npc_bullseye",
-			"mbd_healing_trigger",
-			"mbd_prop_block_npc",
-			"mbd_door_trigger"
+			[ "env_" ] = "env_",
+			[ "grenade" ] = "grenade",
+			[ "instanced_scripted_scene" ] = "instanced_scripted_scene",
+			[ "npc_bullseye" ] = "npc_bullseye",
+			[ "mbd_npc_bullseye" ] = "mbd_npc_bullseye",
+			[ "mbd_healing_trigger" ] = "mbd_healing_trigger",
+			[ "mbd_prop_block_npc" ] = "mbd_prop_block_npc",
+			[ "mbd_door_trigger" ] = "mbd_door_trigger"
 		}
-		function MBD_CheckIfCanContinueBecauseOfTheNPCClass(npcClass)
-			if table.HasValue(IgnoreTheseNPCClasses, npcClass) then return false end
-	
-			return true
-		end
-		function MBD_CheckIfNotBullseyeEntity(npcClass)
-			if table.HasValue(IgnoreTheseNPCBullseyes, npcClass) then return false end
-	
-			return true
-		end
-		function MBD_CheckIfColorNPCClass(npcClass)
-			for _,v in pairs(IgnoreTheseNPCColorCheck) do if string.match(npcClass, v) then return true end end
+
+		function MBD_CheckIfCanContinueBecauseOfTheNPCClass( npcClass )
+			if allowedNPCClassesCombinedWithClassAsKey[ npcClass ] and not IgnoreTheseNPCClasses[ npcClass ] then return true end
 	
 			return false
+		end
+		function MBD_CheckIfNotBullseyeEntity( npcClass )
+			if IgnoreTheseNPCBullseyes[ npcClass ] then return false end
+	
+			return true
+		end
+		function MBD_CheckIfColorNPCClass( npcClass )
+			if IgnoreTheseNPCColorCheck[ npcClass ] then return false end
+	
+			return true
 		end
 
 		function setEntColorNormal(ent, id)

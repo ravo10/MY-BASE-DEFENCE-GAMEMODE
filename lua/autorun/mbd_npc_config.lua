@@ -5,6 +5,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         -------------------- ---- ---
         -- *SETTINGS FOR NPCS * --
         ----------------------- -----
+        -- These are fallback settings, but it can be customized by Player
         -- Combine
         allowedCombines = {
             "MBDNPCCombineElite",
@@ -26,7 +27,8 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
             "npc_antlion"
         }
         allowedNPCsCombined = {}
-        allowedNPCClassesCombined = {}
+        allowedNPCClassesCombined = {} -- Is the cleaned up version
+        allowedNPCClassesCombinedWithClassAsKey = {} -- Is the cleaned up version with npc class as key also
 
         otherClassesNeeded = {
             "npc_headcrab",
@@ -123,12 +125,15 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
 
             -- Used for searching through every valid NPC
             allowedNPCClassesCombined = {}
+            allowedNPCClassesCombinedWithClassAsKey = {}
             for _,NPCKey in pairs(allowedNPCsCombined) do
                 
                 if MBDCompleteCurrNPCList[NPCKey] then
                     local NPCClass = MBDCompleteCurrNPCList[NPCKey]["Class"]
                     if not table.HasValue( allowedNPCClassesCombined, NPCClass ) then
                         table.insert( allowedNPCClassesCombined, NPCClass )
+
+                        allowedNPCClassesCombinedWithClassAsKey[ NPCClass ] = NPCClass
                     end
                 end
 
@@ -222,7 +227,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         end
 
         function MBDMaybeSubtractWhenNPCKilledRemoved(npc)
-            if !npc or ( npc and !npc:IsValid() ) or ( npc:IsValid() and MBD_CheckIfCanContinueBecauseOfTheNPCClass(npc:GetClass()) ) then
+            if !npc or ( npc and !npc:IsValid() ) or ( npc:IsValid() and MBD_CheckIfCanContinueBecauseOfTheNPCClass( npc:GetClass() ) ) then
                 if npc:GetNWBool("NPCSpawnWasASuccess", false) then
                     MBDSubtractToHowManyValidNPCsOnMapNumberNPCSpawnerStatic()
 

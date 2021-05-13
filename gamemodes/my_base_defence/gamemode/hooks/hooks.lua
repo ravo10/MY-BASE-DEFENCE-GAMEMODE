@@ -403,11 +403,14 @@ function playerInitialSpawn(pl)
 						end
 
 						-- For BuyBox
-						timer.Create("PlayerGetAvailableThingsToBuy001"..pl:UniqueID(), 0.5, (10 * 12), function()
+						local timerID0GetAvailableThings = "PlayerGetAvailableThingsToBuy001"..pl:UniqueID()
+						timer.Create( timerID0GetAvailableThings, 0.5, ( 10 * 12 ), function()
 							if AvailableThingsToBuy then
-								net.Start("PlayerGetAvailableThingsToBuy")
-									net.WriteTable(AvailableThingsToBuy)
-								net.Send(pl)
+
+								timer.Remove( timerID0GetAvailableThings )
+
+								MBDSendAvailableThingsToBuyTable( pl, true )
+
 							end
 						end)
 						-- For SpawnMenu
@@ -415,7 +418,7 @@ function playerInitialSpawn(pl)
 						timer.Create(timerID0, 0.5, (10 * 12), function()
 							if MBDcurrJSONFile001Data and MBDcurrJSONFile002Data and MBDSendTheSpawnListsToClients then
 								timer.Remove(timerID0)
-								
+
 								MBDSendTheSpawnListsToClients(pl)
 							end
 						end)
@@ -550,7 +553,15 @@ hook.Add("PlayerSpawn", "mbd:PlayerSpawn001", function(pl)
 	pl:ShouldDropWeapon(true)
 	pl:SetJumpPower(285)
 
-	if (
+	local playerClassInt = pl:GetNWInt( "classInt", -1 )
+
+	if not GameStarted and playerClassInt > -1 then
+
+		pl:MBDStripPlayer()
+		pl:MBDGivePlayerDefaultNotClassRelated()
+		pl:MBDGivePlayerCorrectStuffClassRelated( "PlayerSpawnGameNotStarted", playerClassInt )
+
+	elseif (
 		pl:GetNWBool("isSpectating", false)
 		and GameStarted
 	) then
@@ -587,6 +598,7 @@ hook.Add("PlayerSpawn", "mbd:PlayerSpawn001", function(pl)
 		if respawnTime >= 0 then tellPlayerPlayersToOpenLobby(pl, openLobby, true) end
 
 	elseif GameStarted then HandleWhatHappensNextAfterPlayerDeath(pl, respawnTime) pl:MBDResetPlayerHealthToMax(true) end
+
 end)
 --
 ---
@@ -850,27 +862,27 @@ end)
 hook.Add("OnNPCKilled", "mbd:OnNPCKilled001", function(npc, attacker, inflictor)
 	-- MBDMaybeScaleToNormalNPCLooseBodyparts(npc)
 
-	if !MBD_CheckIfCanContinueBecauseOfTheNPCClass(npc:GetClass()) then return end
+	if !MBD_CheckIfCanContinueBecauseOfTheNPCClass( npc:GetClass() ) then return end
 	--
 	-- GIVE THE PLAYER (attacker) a kill point
 	local __moneyGive 		= nil
 	local __buildPointsGive = nil
 	--
 	-- CALCULATE MONEY BASED ON THE ENTITYS MAX HEALTH..
-	function calculateMoney(A)
+	function calculateMoney( A )
 		--
-		return math.Round(((A * 3) / 9), 0)
+		return math.Round( ( A * 0.33 * 2 ), 0 )
 	end
-	function calculateBuildPoints(A)
+	function calculateBuildPoints( A )
 		--
-		return math.Round((A / 9), 0)
+		return math.Round( ( A / 6 ), 0 )
 	end
 
-	__moneyGive 		= calculateMoney(		npc:GetMaxHealth())
-	__buildPointsGive 	= calculateBuildPoints(	npc:GetMaxHealth())
+	__moneyGive 		= calculateMoney( npc:GetMaxHealth() )
+	__buildPointsGive 	= calculateBuildPoints( npc:GetMaxHealth() )
 	--
 	--
-	if (attacker:IsPlayer()) then
+	if ( attacker:IsPlayer() ) then
 		-- -
 		attacker:SetNWInt("killCount", (attacker:GetNWInt("killCount", "0") + 1))
 
@@ -879,8 +891,52 @@ hook.Add("OnNPCKilled", "mbd:OnNPCKilled001", function(npc, attacker, inflictor)
 		local npcAngle = npc:GetAngles()
 		-- -
 		timer.Simple(0.1, function()
-			local money = ents.Create("mbd_npc_drop_giver")
-			money:SetModel("models/props_lab/clipboard.mdl")
+
+			local shouldGiveMoneySuperDrop = false
+			local shouldGiveBuildPointsSuperDrop = false
+
+			if math.random( 0, 10 ) == 5 then shouldGiveMoneySuperDrop = true end
+			if math.random( 0, 10 ) == 5 then shouldGiveBuildPointsSuperDrop = true end
+
+			-- Maybe give Super Drops
+			if shouldGiveMoneySuperDrop then
+
+				local moneySuperDrop = ents.Create( "mbd_npc_drop_giver" )
+				moneySuperDrop:SetModel( "models/superprop/superprop.mdl" )
+
+				moneySuperDrop:SetPos(npcPos + Vector(math.random(0, 5), math.random(0, 5), 10))
+				moneySuperDrop:SetAngles(npcAngle)
+
+				moneySuperDrop:SetTypeToGive("money_superdrop")
+				moneySuperDrop:SetAmountToGive( __moneyGive * 3 )
+
+				moneySuperDrop:Spawn()
+				moneySuperDrop:Activate()
+
+				moneySuperDrop:AddFlags( FL_OBJECT )
+
+			end
+			if shouldGiveBuildPointsSuperDrop then
+
+				local buildPointsSuperDrop = ents.Create( "mbd_npc_drop_giver" )
+				buildPointsSuperDrop:SetModel( "models/superprop/superprop.mdl" )
+	
+				buildPointsSuperDrop:SetPos(npcPos + Vector(math.random(-1, -5), math.random(-1, -5), 10))
+				buildPointsSuperDrop:SetAngles(npcAngle)
+	
+				buildPointsSuperDrop:SetTypeToGive("buildPoints_superdrop")
+				buildPointsSuperDrop:SetAmountToGive( __buildPointsGive * 3 )
+	
+				buildPointsSuperDrop:Spawn()
+				buildPointsSuperDrop:Activate()
+
+				buildPointsSuperDrop:AddFlags( FL_OBJECT )
+
+			end
+
+			-- Default
+			local money = ents.Create( "mbd_npc_drop_giver" )
+			money:SetModel( "models/bd/bd.mdl" )
 
 			money:SetPos(npcPos + Vector(math.random(0, 5), math.random(0, 5), 3))
 			money:SetAngles(npcAngle)
@@ -891,8 +947,8 @@ hook.Add("OnNPCKilled", "mbd:OnNPCKilled001", function(npc, attacker, inflictor)
 			money:Spawn()
 			money:Activate()
 			--
-			local buildPoints = ents.Create("mbd_npc_drop_giver")
-			buildPoints:SetModel("models/props_c17/tools_wrench01a.mdl")
+			local buildPoints = ents.Create( "mbd_npc_drop_giver" )
+			buildPoints:SetModel( "models/bp/bp.mdl" )
 
 			buildPoints:SetPos(npcPos + Vector(math.random(-1, -5), math.random(-1, -5), 0))
 			buildPoints:SetAngles(npcAngle)
@@ -902,6 +958,16 @@ hook.Add("OnNPCKilled", "mbd:OnNPCKilled001", function(npc, attacker, inflictor)
 
 			buildPoints:Spawn()
 			buildPoints:Activate()
+
+			money:AddFlags( FL_OBJECT )
+			money:GetPhysicsObject():AddGameFlag( FVPHYSICS_NO_SELF_COLLISIONS )
+			buildPoints:AddFlags( FL_OBJECT )
+			buildPoints:GetPhysicsObject():AddGameFlag( FVPHYSICS_NO_SELF_COLLISIONS )
+
+			-- Give a little rotation
+			money:GetPhysicsObject():AddAngleVelocity( Vector( math.random( 10000, 30000 ), math.random( 10000, 30000 ), math.random( 10000, 30000 ) ) )
+			buildPoints:GetPhysicsObject():AddAngleVelocity( Vector( math.random( 10000, 30000 ), math.random( 10000, 30000 ), math.random( 10000, 30000 ) ) )
+
 		end)
 	end
 end)
@@ -1036,7 +1102,7 @@ hook.Add("ScaleNPCDamage", "mbd:ScaleNPCDamage001", function(npc, hitgroup, dmgi
 
 	local npcCLass = npc:GetClass()
 
-	if MBD_CheckIfCanContinueBecauseOfTheNPCClass(npcCLass) then
+	if MBD_CheckIfCanContinueBecauseOfTheNPCClass( npcCLass ) then
 		-- Make NPCs handle more damage if the Round/Wave is higher....
 		-- -- - > >>>
 		local _base = 1.65 -- 1 = normal (higher = NPC's take more damage)

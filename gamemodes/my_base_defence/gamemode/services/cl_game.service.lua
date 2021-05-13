@@ -156,6 +156,14 @@ sound.Add({
 	pitch = { 100 },
 	sound = "game/prop_spawn_error.wav"
 })
+sound.Add({
+	name = "superdrop",
+	channel = CHAN_STATIC,
+	volume = 1,
+	level = 41,
+	pitch = { 100 },
+	sound = "game/superdrop.wav"
+})
 net.Receive("SendLocalSoundToAPlayer", function()
 	local soundStringKey = net.ReadString()
 
@@ -337,12 +345,15 @@ net.Receive( "mbd:SpawnDestructionProps", function()
 	local parentPropAngleVelocity = destructionData[ "parentPropAngleVelocity" ]
 	local parentPropInertia = destructionData[ "parentPropInertia" ]
 
+	local noRandomColor = destructionData[ "noRandomColor" ]
+	local noRandomScaling = destructionData[ "noRandomScaling" ]
+
 	for i = 1, 3 do
 		
 		for _, modelName in pairs( destructionData[ "killmodels" ] ) do
 
 			local destructionProp = ents.CreateClientProp( modelName )
-			destructionProp:SetModelScale( 0.85 * ( math.random( 5, 10 ) / 10 ) )
+			if not noRandomScaling then destructionProp:SetModelScale( 0.85 * ( math.random( 5, 10 ) / 10 ) ) end
 			destructionProp:SetPos( destructionPropNewPos )
 			produserOydelegelseProppen( destructionProp, parentPropAngles, parentPropVelocity, parentPropAngleVelocity, parentPropInertia )
 	
@@ -352,10 +363,14 @@ net.Receive( "mbd:SpawnDestructionProps", function()
 	
 			destructionProp:SetNWFloat( "mbd_alphaDegrader", 255 )
 			destructionProp:SetNWInt( "mbd_downCounter", howManyTimesItCountsFor - howManyTimesItCountsFor / 3 )
-	
-			local randomColor = ColorToHSV( ColorRand( false ) )
-	
-			destructionProp:SetColor( HSVToColor( randomColor, 1, 1 ) )
+
+			if not noRandomColor then
+				
+				local randomColor = ColorToHSV( ColorRand( false ) )
+				destructionProp:SetColor( HSVToColor( randomColor, 1, 1 ) )
+
+			end
+
 			destructionProp:SetModelScale( 0, 6.2 )
 	
 			changeAlphaColorAndMaybeRemovePropLoop( destructionProp, howFastItFadesFor, howManyTimesItCountsFor )
@@ -504,7 +519,7 @@ net.Receive( "mbd:SpawnNPCBodyParts", function()
 
 	-- Set timer to animate fading for kill props
 	local howFastItFadesFor = math.random( 10, 20 ) / 1000 -- How fast it fades away
-	local howManyTimesItCountsFor = math.random( 400, 700 ) -- How long it will be alive for ( higher = more )
+	local howManyTimesItCountsFor = math.random( 1050, 1200 ) -- How long it will be alive for ( higher = more )
 
 	bodypart:SetNWFloat( "mbd_alphaDegrader", 255 )
 	bodypart:SetNWInt( "mbd_downCounter", howManyTimesItCountsFor - howManyTimesItCountsFor / 3 )

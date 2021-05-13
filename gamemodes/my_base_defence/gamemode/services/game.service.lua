@@ -5,7 +5,7 @@
 --
 ---
 ---- KILLMODEL PROP SPAWN (RANDOM RELATIVE TO "PARENT")
-function SpawnKillmodelProps( ent, killmodels, zExtra )
+function SpawnKillmodelProps( ent, killmodels, zExtra, noRandomColor, noRandomScaling )
 
 	local entHasPhysObject = ent.GetPhysicsObject
 
@@ -28,12 +28,14 @@ function SpawnKillmodelProps( ent, killmodels, zExtra )
 		net.Start( "mbd:SpawnDestructionProps" )
 
 			net.WriteTable({
-				destructionPropNewPos 	= destructionPropNewPos,
-				killmodels 				= killmodels,
-				parentPropAngles		= entPhysObject:GetAngles(),
-				parentPropVelocity		= entPhysObject:GetVelocity(),
-				parentPropAngleVelocity	= entPhysObject:GetAngleVelocity(),
-				parentPropInertia		= entPhysObject:GetInertia()
+				destructionPropNewPos 		= destructionPropNewPos,
+				killmodels 					= killmodels,
+				parentPropAngles			= entPhysObject:GetAngles(),
+				parentPropVelocity			= entPhysObject:GetVelocity(),
+				parentPropAngleVelocity		= entPhysObject:GetAngleVelocity(),
+				parentPropInertia			= entPhysObject:GetInertia(),
+				noRandomColor				= noRandomColor,
+				noRandomScaling				= noRandomScaling
 			})
 
 		net.Broadcast()

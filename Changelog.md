@@ -12,6 +12,16 @@
 
 # Stable
 
+### 0.0.206 ( 13.05.21 )
+* Adjusted the amount of B.P. and £B.D. given on start and when picking up NPC drops
+* Improved performance on the logic of how the valid NPC classes etc. is checked
+* Fixed a bug with timer, which would infinitly get the BuyBox list every 0.5 seconds ( old code )
+* Removed meele weapons from weapons given on start ( will get 'fist' instead as default )
+* Added the possibility to receive a massive drop from NPCs ( low chance )
+* Added new models for coin drops
+* Fixed small bug with not getting the class weapons, if Player killed itself before game start ( admin/superadmin )
+* Fixed small bug with color check for some entities
+
 ### 0.0.2054 ( 09.05.21 )
 * Fixed a bug with loading the SWEPs list for checking if the Player should receive a fallback SWEP or not
 * Fixed a critical bug where the Mechanics class could not open the Vehicles menu

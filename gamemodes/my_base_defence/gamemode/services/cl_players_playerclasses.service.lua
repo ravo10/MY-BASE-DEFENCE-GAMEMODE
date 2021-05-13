@@ -1147,12 +1147,6 @@ net.Receive("CloseBuyBoxMenu", function()
 end)
 --
 --
--- ON START LOAD AVAILABLE STUFF TO BUY
-net.Receive("PlayerGetAvailableThingsToBuy", function()
-	--
-	availableThingsToBuy = net.ReadTable()
-end)
---
 --
 -- ....................... --
 

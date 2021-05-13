@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/superprop/mbd_superdrop"
+	"$bumpmap" "models/superprop/mbd_superdrop_normal"
+	"$surfaceprop" "Rock"
+	"$reflectivity" "[.5 .5 .5]"
+}

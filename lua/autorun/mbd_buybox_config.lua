@@ -150,7 +150,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
             mbd_fas2_att_uziwoodenstock	= 260
         }
         -- - -
-        -- - --- - Allowed classes
+        -- - --- - Allowed classes - These are fallback tables
         -- - -
         -- Weapons
         MBDallowedWeaponClasses_Engineer = {
@@ -494,13 +494,13 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         -- >>> Add first a *Price* in the correct table => Then add the weapon *className* for the correct PlayerClass.
         -- --------- -
         -- Everything else is automated.
-        local function SendAvailableThingsToBuyTable()
+        function MBDSendAvailableThingsToBuyTable( pl, dontSendMessageToConsole )
             if AvailableThingsToBuy then
-                MsgC(Color(0, 211, 15), "M.B.D.: Sending \"AvailableThingsToBuy\" (BuyBox) to all connected Players.\n")
+                if not dontSendMessageToConsole then MsgC(Color(0, 211, 15), "M.B.D.: Sending \"AvailableThingsToBuy\" (BuyBox) to all connected Players.\n") end
 
                 net.Start("mbd_SendAvailableThingsThingsToBuy")
                     net.WriteTable(AvailableThingsToBuy)
-                net.Broadcast()
+                if not pl then net.Broadcast() elseif pl:IsValid() then net.Send( pl ) end
             end
         end
 
@@ -563,7 +563,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
 
                         -- --
                         -- -- - - Since there is a delay, send out the table to already connected Players ( the client will also request this on connect )
-                        timer.Simple(1.5, SendAvailableThingsToBuyTable)
+                        timer.Simple(1.5, MBDSendAvailableThingsToBuyTable)
                     end)
                 end
             end checkIfValid()
@@ -591,7 +591,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         end
 
         -- This for when a Player writes a custom list
-        function MBDWriteBuyBoxCustomizedListFromWithinTheGameOnly(sendToAllPlayers)
+        function MBDWriteBuyBoxCustomizedListFromWithinTheGameOnly()
             local completeListAllWep = {}
             table.Add(completeListAllWep, MBDallowedWeaponClasses_Engineer)
             table.Add(completeListAllWep, MBDallowedWeaponClasses_Mechanic)

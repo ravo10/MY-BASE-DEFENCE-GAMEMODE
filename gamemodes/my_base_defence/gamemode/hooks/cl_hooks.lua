@@ -804,7 +804,7 @@ hook.Add("HUDPaint", "mbd_buybox:EntWhat001", function()
 	local h			= 40
 	--
 	-- TEXT
-	local buyBoxText = "Purchase ( \"E\" )"
+	local buyBoxText = "Open Box ( \"E\" )"
 
 	local extra_widthBUYBOX, extra_heightBUYBOX = getTextWidthAndHeight("ScoreboardDefault", buyBoxText)
 

@@ -602,7 +602,6 @@ util.PrecacheSound("game/vehicle/horn_jalopy2.wav")
 util.PrecacheSound("game/vehicle/horn_airboat.wav")
 util.PrecacheSound("game/vehicle/horn_clown.wav")
 
-util.PrecacheSound("swep/airwrench.wav")
 util.PrecacheSound("swep/droppingwrench.wav")
 util.PrecacheSound("swep/hammer.wav")
 util.PrecacheSound("swep/hammer2.wav")

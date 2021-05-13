@@ -16,6 +16,10 @@ function ENT:Draw()
 			__color = Color(249, 204, 22, 255)
 		elseif self:GetTypeToGive() == "buildPoints" then
 			__color = Color(43, 212, 255, 255)
+		elseif self:GetTypeToGive() == "money_superdrop" then
+			__color = Color(249, 204, 22, 255)
+		elseif self:GetTypeToGive() == "buildPoints_superdrop" then
+			__color = Color(43, 212, 255, 255)
 		end
 		lightAbove.r = __color.r
 		lightAbove.g = __color.g
@@ -23,7 +27,11 @@ function ENT:Draw()
 		
 		lightAbove.brightness	= 3
 		lightAbove.Decay 		= 5
-		lightAbove.Size 		= 53
+		lightAbove.Size 		= 33
 		lightAbove.DieTime 		= CurTime() + 0.15
+
+		if self:GetTypeToGive() == "money_superdrop" or self:GetTypeToGive() == "buildPoints_superdrop" then
+			lightAbove.Size = 80
+		end
 	end
 end

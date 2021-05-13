@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/superprop/mbd_superdrop_lock"
+	"$bumpmap" "models/superprop/mbd_superdrop_lock_normal"
+	"$surfaceprop" "Metall"
+	"$reflectivity" "[.5 .5 .5]"
+}

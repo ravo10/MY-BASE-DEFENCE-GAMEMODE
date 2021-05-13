@@ -13,7 +13,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
         for wepKey, wepTable in pairs( tempLoadedServerWeaponClassList ) do
             class = wepTable[ "ClassName" ] if not class then class = wepKey end
 
-            table.insert( newTable, class )
+            newTable[ class ] = class
 
             _i = _i + 1 if _i == tempLoadedServerWeaponClassListLength then MBDLoadedServerWeaponClassList = newTable end
         end
@@ -157,16 +157,16 @@ if engine.ActiveGamemode() == "my_base_defence" then
             --
             -- BUILD POINTS
             if (self:GetNWInt("classInt", -1) == 0) then -- engineer
-                self:SetNWInt("buildPoints", 54)
+                self:SetNWInt("buildPoints", 930)
             else
-                self:SetNWInt("buildPoints", 27)
+                self:SetNWInt("buildPoints", 760)
             end
             --
             -- MONEY
             if (self:GetNWInt("classInt", -1) == 1) then -- mechanic
-                self:SetNWInt("money", 2000)
+                self:SetNWInt("money", 3000)
             else
-                self:SetNWInt("money", 1000)
+                self:SetNWInt("money", 2000)
             end
         end
         -- On Wave Round End
@@ -174,18 +174,18 @@ if engine.ActiveGamemode() == "my_base_defence" then
             if !self:MBDIsPlayerValidInGame() then return end
         
             if (self:GetNWInt("classInt", -1) == 0) then -- engineer
-                self:SetNWInt("buildPoints", (self:GetNWInt("buildPoints") + 18))
+                self:SetNWInt("buildPoints", (self:GetNWInt("buildPoints") + 108))
             else
-                self:SetNWInt("buildPoints", (self:GetNWInt("buildPoints") + 9))
+                self:SetNWInt("buildPoints", (self:GetNWInt("buildPoints") + 90))
             end
         end
         function metaTablePlayerRef:MBDGiveMoneyOnRoundWaveEnd()
             if !self:MBDIsPlayerValidInGame() then return end
         
             if (self:GetNWInt("classInt", -1) == 1) then -- mechanic
-                self:SetNWInt("money", (self:GetNWInt("money") + 1700))
+                self:SetNWInt("money", (self:GetNWInt("money") + 900))
             else
-                self:SetNWInt("money", (self:GetNWInt("money") + 1000))
+                self:SetNWInt("money", (self:GetNWInt("money") + 600))
             end
         end
         function metaTablePlayerRef:MBDGiveHealthOnRoundWaveEnd()
@@ -243,7 +243,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
 
         local function CheckIfWeaponClassExistsOnServer( wepClass )
 
-            if table.HasValue( MBDLoadedServerWeaponClassList, wepClass ) then return true end
+            if MBDLoadedServerWeaponClassList and MBDLoadedServerWeaponClassList[ wepClass ] then return true end
 
             return false
 
@@ -421,7 +421,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                     if (newClassInt == 0) then
                         local swepClasses = {
                             -- SIDE ARMS
-                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            --[[ MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ), ]]
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_deagle", "weapon_357" ),
                             -- MAIN
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_rk95", "weapon_ar2" ),
@@ -449,7 +449,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                     elseif (newClassInt == 1) then
                         local swepClasses = {
                             -- SIDE ARMS
-                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_dv2", "weapon_crowbar" ),
+                            --[[ MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_dv2", "weapon_crowbar" ), ]]
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_p226", "weapon_pistol" ),
                             -- MAIN
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m67", "weapon_frag" ), -- grenade
@@ -481,7 +481,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                     elseif (newClassInt == 2) then
                         local swepClasses = {
                             -- SIDE ARMS
-                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            --[[ MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ), ]]
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ots33", "weapon_pistol" ),
                             -- MAIN
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_mp5sd6", "weapon_smg1" ),
@@ -510,7 +510,7 @@ if engine.ActiveGamemode() == "my_base_defence" then
                     elseif (newClassInt == 3) then
                         local swepClasses = {
                             -- SIDE ARMS
-                            MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ),
+                            --[[ MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_machete", "weapon_stunstick" ), ]]
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_ragingbull", "weapon_357" ),
                             -- MAIN
                             MaybeGivePlayerFallbackSWEPClass( "mbd_fas2_m67", "weapon_frag" ), -- grenade

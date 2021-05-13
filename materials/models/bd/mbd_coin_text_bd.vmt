@@ -1,0 +1,7 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/bd/mbd_coin_text_bd"
+	"$bumpmap" "models/bd/mbd_coin_text_bd_normal"
+	"$surfaceprop" "Rock"
+	"$reflectivity" "[.8 .8 .8]"
+}

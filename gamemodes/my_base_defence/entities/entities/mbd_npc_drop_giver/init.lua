@@ -57,39 +57,64 @@ function ENT:GravGunPickupAllowed(pl)
 end
 --
 --
-function ENT:Touch(ent)
+local removeSelf = function( self )
+
+	if self and self:IsValid() then
+		self:Remove()
+	end
+
+end
+local givePlayer = function( self, _giveDataTable, ent )
+
+	local _type 	= _giveDataTable[ 1 ]
+	local _typeID 	= string.Split( _giveDataTable[ 1 ], "_" )[ 1 ]
+	local amount 	= _giveDataTable[ 2 ]
+
+	-- Give
+	ent:SetNWInt( _typeID, ( ent:GetNWInt( _typeID, 0 ) + amount ) )
+
+	if _type == "money" then
+
+		SendLocalSoundToAPlayer( "game_money_collected", ent )
+
+	elseif _type == "buildPoints" then
+
+		SendLocalSoundToAPlayer( "game_buildpoints_collected", ent )
+
+	end
+
+	if _type == "money_superdrop" then
+
+		SpawnKillmodelProps( ent, { "models/bd/bd.mdl", "models/bd/bd.mdl", "models/bd/bd.mdl", "models/bp/bp.mdl" }, 5, true, false )
+		SendLocalSoundToAPlayer( "superdrop", ent )
+
+	elseif _type == "buildPoints_superdrop" then
+
+		SpawnKillmodelProps( ent, { "models/bp/bp.mdl", "models/bp/bp.mdl", "models/bp/bp.mdl", "models/bp/bp.mdl" }, 5, true, false )
+		SendLocalSoundToAPlayer( "superdrop", ent )
+
+	end
+
+	removeSelf( self )
+
+end
+
+function ENT:Touch( ent )
+
+	_type = self:GetTypeToGive()
+	amount = self:GetAmountToGive()
+
 	if (
-		ent:IsValid() and
-		ent:IsPlayer() and
+		ent:IsValid() and ent:IsPlayer() and
 		not ent:GetNWBool("isSpectating", false)
 	) then
-		local removeSelf = function()
-			if self and self:IsValid() then
-				self:Remove()
-			end
-		end
-		local givePlayer = function(_giveDataTable)
-			local type = _giveDataTable.type
-			local amount = _giveDataTable.amount
-			local __sound = _giveDataTable.sound
-
-			ent:SetNWInt(type, (ent:GetNWInt(type, 0) + amount))
-			if type == "money" then
-				SendLocalSoundToAPlayer("game_money_collected", ent)
-			elseif type == "buildPoints" then
-				SendLocalSoundToAPlayer("game_buildpoints_collected", ent)
-			end
-
-			removeSelf()
-		end
 
 		-- Give the Player the money/build points
 		-- -
-		givePlayer({
-			type = self:GetTypeToGive(),
-			amount = self:GetAmountToGive()
-		})
+		givePlayer( self, { _type, amount }, ent )
+
 	end
 
 	return true
+
 end
