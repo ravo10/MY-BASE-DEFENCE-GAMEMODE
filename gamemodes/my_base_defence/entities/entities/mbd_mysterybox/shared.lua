@@ -52,8 +52,7 @@ function ENT:SetupDataTables()
         if currHealthConVar > 0 then
             self:SetMysteryboxHealth(currHealthConVar)
         else
-            -- If health is lower or equal to this, the mysterybox will not get removed
-            self:SetMysteryboxHealth(-1000000000)
+            self:SetMysteryboxHealth(-1)
         end
         self:SetMysteryboxPriceToBuy(950)
         self:SetAmountOfUses(0)

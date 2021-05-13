@@ -12,6 +12,11 @@
 
 # Stable
 
+### 0.0.2061 ( 13.05.21 )
+* Updated new particles for Mystery Box + fixed some bugs
+* Added Context Menu ( Hold 'C' ) for Mystery Box, so ConVar settings can be adjusted easily
+* Fixed a critical bug with the Mystery Box, where the random counter would not change
+
 ### 0.0.206 ( 13.05.21 )
 * Adjusted the amount of B.P. and £B.D. given on start and when picking up NPC drops
 * Improved performance on the logic of how the valid NPC classes etc. is checked

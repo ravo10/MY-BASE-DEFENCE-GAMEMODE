@@ -4,9 +4,24 @@ include("shared.lua")
 ----------- --------------------
 --- By: ravo Norway
 --------------------
-if not ConVarExists("mbd_mysterybox_bo3_ravo_teddybearGetChance") then
-	CreateConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance", ((table.Count(mbd_allowedWeaponsMysteryBox) / 3.92307) * -1), FCVAR_PROTECTED, "How likley it is to get a Teddybear. Lower = Higher risk.")
-end
+local defaultDivisionValueGetChance = 3.92307
+
+timer.Create( "mbd_bo3RavoMysteryBoxInit", 0.3, 0, function()
+	
+	if mbd_allowedWeaponsMysteryBox then
+
+		timer.Remove( "mbd_bo3RavoMysteryBoxInit" )
+		
+		if not ConVarExists( "mbd_mysterybox_bo3_ravo_teddybearGetChance" ) then
+			CreateConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance", ( ( table.Count( mbd_allowedWeaponsMysteryBox ) / defaultDivisionValueGetChance ) * -1), bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "How likley it is to get a Teddybear. Lower = Higher risk." )
+		end
+		if not ConVarExists( "mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed" ) then
+			CreateConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed", 0, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "If the system will allow totally Custom Teddy Bear Get Chance Value (it doesn't matter how many times you have used the box)." )
+		end
+
+	end
+	
+end )
 ----------------------
 -- Spawn Function --
 --------------------
@@ -27,11 +42,18 @@ end
 ----------------
 function ENT:Initialize()
 	self:SetName("mbd_ent")
+
+	if GetConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed" ):GetInt() == 0 then
+
+		local chance = math.Round( ( ( table.Count( bo3_ravo_mysterybox_allowedWeapons ) / defaultDivisionValueGetChance ) * -1 ), 3 )
 	
-	if not ConVarExists("mbd_mysterybox_bo3_ravo_teddybearGetChance") then
-		CreateConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance", ((table.Count(mbd_allowedWeaponsMysteryBox) / 3.92307) * -1), FCVAR_PROTECTED, "How likley it is to get a Teddybear. Lower = Higher risk.")
-	else
-		GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):SetInt(((table.Count(mbd_allowedWeaponsMysteryBox) / 3.92307) * -1))
+		if not ConVarExists( "mbd_mysterybox_bo3_ravo_teddybearGetChance" ) then
+			CreateConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance", chance, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "How likley it is to get a Teddybear. Lower = Higher risk.")
+		else
+			-- Reset to normal settings
+			GetConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance" ):SetFloat( chance )
+		end
+
 	end
 
 	self:MaybeAdjustTheChanceToGetATeddybear()
@@ -59,40 +81,44 @@ function ENT:MaybeAdjustTheChanceToGetATeddybear()
 	-- Adjust the chance to get a teddybear after the amount of uses
 	-- -
 	local currentAmountOfUses = self:GetParentBoxEntity():GetAmountOfUses()
-	local newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetInt()
+	local newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat()
 	
-	if (
-		currentAmountOfUses >= 0 and
-		currentAmountOfUses <= 4
-	) then
-		newTeddybearRisk = 1
-	elseif (
-		currentAmountOfUses > 4 and
-		currentAmountOfUses <= 8
-	) then
-		if newTeddybearRisk == 1 then
-			newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetInt()
+	if GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed"):GetInt() == 0 then
+	
+		if (
+			currentAmountOfUses >= 0 and
+			currentAmountOfUses <= 4
+		) then
+			newTeddybearRisk = 1
+		elseif (
+			currentAmountOfUses > 4 and
+			currentAmountOfUses <= 8
+		) then
+			if newTeddybearRisk == 1 then
+				newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat()
+			end
+
+			newTeddybearRisk = (newTeddybearRisk * 1.15)
+		elseif (
+			currentAmountOfUses > 8 and
+			currentAmountOfUses <= 12
+		) then
+			if newTeddybearRisk == 1 then
+				newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat()
+			end
+
+			newTeddybearRisk = (newTeddybearRisk * 1.3)
+		else
+			if newTeddybearRisk == 1 then
+				newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat()
+			end
+
+			newTeddybearRisk = (newTeddybearRisk * 1.5)
 		end
 
-		newTeddybearRisk = (newTeddybearRisk * 115)
-	elseif (
-		currentAmountOfUses > 8 and
-		currentAmountOfUses <= 12
-	) then
-		if newTeddybearRisk == 1 then
-			newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetInt()
-		end
-
-		newTeddybearRisk = (newTeddybearRisk * 130)
-	else
-		if newTeddybearRisk == 1 then
-			newTeddybearRisk = GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetInt()
-		end
-
-		newTeddybearRisk = (newTeddybearRisk * 150)
 	end
 
-	self:SetTeddybearRisk(math.Round(newTeddybearRisk))
+	self:SetTeddybearRisk( newTeddybearRisk )
 end
 function ENT:SwitchWeaponModel(weaponWModel, weaponClass)
 	if weaponClass then self:SetCurrentWeaponClassSwitch(weaponClass) end
@@ -114,7 +140,7 @@ function ENT:CycleWeapons()
 	local parentEnt = nil
 	--
 	-- Cycle Creator
-	local tableCountAllowedWeapons = table.Count(mbd_allowedWeaponsMysteryBox)
+	local tableCountAllowedWeapons = table.Count( mbd_allowedWeaponsMysteryBox )
 
 	-- Make the switch slower...
 	timer.Simple((cycleLastSecond / 1.5), function()
@@ -124,7 +150,7 @@ function ENT:CycleWeapons()
 	local function _swithWeapons(self)
 		if not self:IsValid() then return end
 
-		local randomWeaponIndex = math.ceil(math.random(self:GetTeddybearRisk(), tableCountAllowedWeapons) / 100)
+		local randomWeaponIndex = math.ceil( math.random( self:GetTeddybearRisk(), tableCountAllowedWeapons ) )
 		if randomWeaponIndex > tableCountAllowedWeapons then randomWeaponIndex = tableCountAllowedWeapons end
 		local theWeaponsTable = mbd_allowedWeaponsMysteryBox[randomWeaponIndex]
 

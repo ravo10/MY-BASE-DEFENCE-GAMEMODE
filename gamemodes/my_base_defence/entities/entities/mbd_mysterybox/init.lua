@@ -3,16 +3,16 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 if not ConVarExists("mbd_mysterybox_bo3_ravo_exchangeWeapons") then
-	CreateConVar("mbd_mysterybox_bo3_ravo_exchangeWeapons", 1, FCVAR_PROTECTED, "If set to higher than 0, the Player will get his weapon exchanged with the one in the Mystery Box.")
+	CreateConVar("mbd_mysterybox_bo3_ravo_exchangeWeapons", 1, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "If set to higher than 0, the Player will get his weapon exchanged with the one in the Mystery Box.")
 end
 if not ConVarExists("mbd_mysterybox_bo3_ravo_MysteryBoxTotalHealth") then
-	CreateConVar("mbd_mysterybox_bo3_ravo_MysteryBoxTotalHealth", 1500, FCVAR_PROTECTED, "If set to lower than or equal to 0, the Mystery Box will have an infinite value as health.")
+	CreateConVar("mbd_mysterybox_bo3_ravo_MysteryBoxTotalHealth", 1500, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "If set to lower than or equal to 0, the Mystery Box will have an infinite value as health.")
 end
 if not ConVarExists("mbd_mysterybox_bo3_ravo_hideAllNotificationsFromMysteryBox") then
-	CreateConVar("mbd_mysterybox_bo3_ravo_hideAllNotificationsFromMysteryBox", 0, FCVAR_PROTECTED, "If set to lower than or equal to 0, the Mystery Box will not create notifications of any kind.")
+	CreateConVar("mbd_mysterybox_bo3_ravo_hideAllNotificationsFromMysteryBox", 0, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "If set to lower than or equal to 0, the Mystery Box will not create notifications of any kind.")
 end
 if not ConVarExists("mbd_mysterybox_bo3_ravo_disableAllParticlesEffects") then
-	CreateConVar("mbd_mysterybox_bo3_ravo_disableAllParticlesEffects", 0, FCVAR_PROTECTED, "If set to higher than 0, the Mystery Box will not create any particle effects (good for performance).")
+	CreateConVar("mbd_mysterybox_bo3_ravo_disableAllParticlesEffects", 0, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "If set to higher than 0, the Mystery Box will not create any particle effects (good for performance).")
 end
 
 util.AddNetworkString("setClientModleMysteryBoxRavo")
@@ -100,18 +100,15 @@ function ENT:OnTakeDamage(dmginfo)
 	local damageAmount = dmginfo:GetDamage()
 
 	local currHealth = self:GetMysteryboxHealth()
-	local newHealth = (currHealth - damageAmount)
+	if GetConVar("bo3ravo_mysterybox_bo3_ravo_MysteryBoxTotalHealth"):GetInt() <= 0 then currHealth = nil end
+
+	local newHealth = ( ( currHealth or 0 ) - damageAmount )
 	------ -- -
 	-- Set health
-	if newHealth > 0 then
-		self:SetMysteryboxHealth(newHealth)
-	elseif newHealth > -1000000000 then
-		-- Remove
-		for i=1, 5 do
-			SpawnKillmodelProps( self, { "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl" }, 0 )
-		end
-
+	if newHealth > 0 then self:SetMysteryboxHealth( newHealth ) elseif currHealth then
+		-- Destroy
 		self:Remove()
+		mbd_Bo3Ravo_SpawnKillmodelProps( self, { "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl" }, 0 )
 	end
 end
 ----------

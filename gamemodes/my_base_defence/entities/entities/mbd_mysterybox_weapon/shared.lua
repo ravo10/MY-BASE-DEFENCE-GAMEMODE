@@ -37,7 +37,7 @@ function ENT:SetupDataTables()
 		self:SetAmountDown(0.0005)
 		self:SetUpperLimit(43)
 		self:SetLowerLimit(5)
-		self:SetTeddybearRisk(GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetInt())
+		self:SetTeddybearRisk( GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat() )
 		self:SetExtraZ(-13) -- Juster??
 
 		self:SetOwnerPlayer(nil)
