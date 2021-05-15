@@ -41,11 +41,13 @@ end
 -- Initialize --
 ----------------
 function ENT:Initialize()
+	self:SetUseType(SIMPLE_USE)
+
 	self:SetName("mbd_ent")
 
 	if GetConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed" ):GetInt() == 0 then
 
-		local chance = math.Round( ( ( table.Count( bo3_ravo_mysterybox_allowedWeapons ) / defaultDivisionValueGetChance ) * -1 ), 3 )
+		local chance = math.Round( ( ( table.Count( mbd_allowedWeaponsMysteryBox ) / defaultDivisionValueGetChance ) * -1 ), 3 )
 	
 		if not ConVarExists( "mbd_mysterybox_bo3_ravo_teddybearGetChance" ) then
 			CreateConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance", chance, bit.bor( FCVAR_PROTECTED, FCVAR_ARCHIVE ), "How likley it is to get a Teddybear. Lower = Higher risk.")
@@ -58,21 +60,18 @@ function ENT:Initialize()
 
 	self:MaybeAdjustTheChanceToGetATeddybear()
 
-	self:SetModel("models/weapons/w_Pistol.mdl") -- Fallback model
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetMoveType(MOVETYPE_FLY)
-	self:SetNotSolid(true) -- I can add a USE-hook, but don't care about it right now
-	self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+	self:SetModel( "models/maxofs2d/logo_gmod_b.mdl" )
+	self:SetModelScale( 0.15 )
+	self:PhysicsInit( SOLID_VPHYSICS )
+	self:SetMoveType( MOVETYPE_FLY )
+	self:SetSolidFlags( FSOLID_NOT_STANDABLE )
+	self:SetCollisionGroup( COLLISION_GROUP_WORLD )
 
 	local phys = self:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:Wake()
-	end
-	
-	self:SetAngles(self:GetAngles() - Angle(0, -90, 0))
-	
+	if phys:IsValid() then phys:Wake() end
+
 	self:CycleWeapons()
-	self:DrawShadow(false)
+	self:DrawShadow( false )
 end
 --------------------
 -- Cycle Weapons ---
@@ -132,27 +131,27 @@ function ENT:SwitchWeaponModel(weaponWModel, weaponClass)
 	end
 end
 function ENT:CycleWeapons()
-	local cycleLastSecond = self:GetCycleLastSecond()
-	local cycleNextSecond = self:GetCycleNextSecond()
+	local CycleDurationScalar = self:GetCycleDurationScalar()
+	local CycleUntilNextWepInSecond = self:GetCycleUntilNextWepInSecond()
 
-	local totalAmountOfReps = math.Round(((1 - cycleNextSecond) / cycleLastSecond) * 100)
+	local totalAmountOfReps = math.Round( ( (1 - CycleUntilNextWepInSecond ) / CycleDurationScalar ) * 100 )
 
 	local parentEnt = nil
 	--
 	-- Cycle Creator
 	local tableCountAllowedWeapons = table.Count( mbd_allowedWeaponsMysteryBox )
-
-	-- Make the switch slower...
-	timer.Simple((cycleLastSecond / 1.5), function()
-		cycleNextSecond = cycleNextSecond * (1 + 0.9) -- Decrease by an percentage
-	end)
 	
-	local function _swithWeapons(self)
+	-- Make the switch slower...
+	timer.Simple( ( CycleDurationScalar / 1.5 ), function()
+		CycleUntilNextWepInSecond = CycleUntilNextWepInSecond * ( 1 + 0.9 ) -- Decrease by an percentage
+	end )
+
+	local function _switchWeapons(self)
 		if not self:IsValid() then return end
 
 		local randomWeaponIndex = math.ceil( math.random( self:GetTeddybearRisk(), tableCountAllowedWeapons ) )
 		if randomWeaponIndex > tableCountAllowedWeapons then randomWeaponIndex = tableCountAllowedWeapons end
-		local theWeaponsTable = mbd_allowedWeaponsMysteryBox[randomWeaponIndex]
+		local theWeaponsTable = mbd_allowedWeaponsMysteryBox[ randomWeaponIndex ]
 
 		local _WModel
 
@@ -160,17 +159,18 @@ function ENT:CycleWeapons()
 		-- Cycle
 		if self:IsValid() then
 			parentEnt = self:GetParentBoxEntity()
-
+			-- --
+			-- If lower or equal to 0, then spawn a Teddy bear
 			if randomWeaponIndex <= 0 then
-				self:SwitchWeaponModel("models/mysterybox_bo3/teddybear/mysterybox_bo3_teddybear_standalone.mdl", nil)
+				self:SwitchWeaponModel( "models/mysterybox_bo3/teddybear/mysterybox_bo3_teddybear_standalone.mdl", nil )
 
 				self:ResetSequence("teddybear_still")
 			elseif theWeaponsTable then
 				_WModel = theWeaponsTable.WModel
 				if not _WModel then _WModel = theWeaponsTable.VModel end
-				if not _WModel then _WModel = "models/weapons/w_crowbar.mdl" end
+				if not _WModel then _WModel = "models/maxofs2d/logo_gmod_b.mdl" end -- Likely never to happend
 
-				self:SwitchWeaponModel(_WModel, theWeaponsTable.ClassName)
+				self:SwitchWeaponModel( _WModel, theWeaponsTable.ClassName )
 
 				self:ResetSequence("idle")
 			else return end
@@ -261,9 +261,13 @@ function ENT:CycleWeapons()
 		-- Start next loop
 		totalAmountOfReps = (totalAmountOfReps - 1)
 
+		-- Slow down the cycle a bit
+		if totalAmountOfReps == 7 then CycleUntilNextWepInSecond = CycleUntilNextWepInSecond * 2 end
+		if totalAmountOfReps == 3 then CycleUntilNextWepInSecond = CycleUntilNextWepInSecond * 1.3 end
+
 		if totalAmountOfReps >= 0 then
-			timer.Simple(cycleNextSecond, function()
-				_swithWeapons(self)
+			timer.Simple(CycleUntilNextWepInSecond, function()
+				_switchWeapons(self)
 			end)
 		end
 	end
@@ -274,7 +278,7 @@ function ENT:CycleWeapons()
 		if self and self:IsValid() then
 			timer.Remove(timerID)
 
-			_swithWeapons(self)
+			_switchWeapons(self)
 		end
 	end)
 end
@@ -282,10 +286,11 @@ end
 -- Think --
 -----------
 function ENT:Think()
-	local _parentEnt = self:GetParentBoxEntity()
+
+	local MysteryBox = self:GetParentBoxEntity()
 	local timerID = "MBDThink"..self:EntIndex()
 
-	if not _parentEnt or not _parentEnt:IsValid() then
+	if not MysteryBox or not MysteryBox:IsValid() then
 		if self and self:IsValid() then
 			self:Remove()
 			
@@ -293,85 +298,169 @@ function ENT:Think()
 		end
 	end
 
-	local __amountUp = self:GetAmountUp()
-	local __amountDown = self:GetAmountDown()
-	local __UpperLimit = self:GetUpperLimit()
-	local __LowerLimit = self:GetLowerLimit()
-	
-
 	-- Start Position
-	local extraZ = self:GetExtraZ()
-
 	-- Move Weapon UP... . --
-	-- Position
-	self:SetPos(
-		Vector(
-			_parentEnt:GetPos().x,
-			_parentEnt:GetPos().y,
-			(_parentEnt:GetPos().z + __LowerLimit + extraZ)
-		)
-	)
-	-- - Angle
+	local modelSize = 0.15
+
+	local ParentPosition = MysteryBox:GetPos()
+
+	local ChangingWeaponZPosValueCounter = self:GetChangingWeaponZPosValueCounter()
+	local extraZWeapon = ( ParentPosition.z + self:GetStartPositionZPos() + ChangingWeaponZPosValueCounter )
+
 	if self:GetModel() == "models/mysterybox_bo3/teddybear/mysterybox_bo3_teddybear_standalone.mdl" then
-		self:SetAngles(_parentEnt:GetAngles())
+
+		modelSize = 1
+
+		local newpos, newang = LocalToWorld( Vector( 0, 0, 0 ), Angle( 0, 0, 0 ), Vector( ParentPosition.x, ParentPosition.y, extraZWeapon ), MysteryBox:GetAngles() )
+
+		self:SetAngles( newang )
+		self:SetPos( newpos )
+		
+		self:SetAngles( MysteryBox:GetAngles() )
+
 	else
-		self:SetAngles(_parentEnt:GetAngles() + Angle(0, 270, 0))
+
+		local addAngles = Angle( 0, 0, 0 )
+		local fallbackModelIsActive = self:GetModel() == "models/maxofs2d/logo_gmod_b.mdl"
+
+		if not fallbackModelIsActive then addAngles = Angle( 0, 90, 0 ) modelSize = 1 end
+
+		local newpos, newang = LocalToWorld(
+
+			Vector( 0, 0, 0 ), addAngles,
+			Vector( ParentPosition.x, ParentPosition.y, extraZWeapon ), MysteryBox:GetAngles()
+		)
+
+		self:SetAngles( newang )
+		self:SetPos( newpos )
+
 	end
 
 	-- Set Z Position
 	if self:IsValid() then
-		-- Start moving down...
-		if (
-			extraZ >= __UpperLimit and
-			self:GetMoveWeaponUp()
-		) then
-			self:SetMoveWeaponUp(false)
-		end
+
+		self:SetModelScale( modelSize )
+		
+		if self:GetChangingWeaponZPosValueCounterLerpTime() < 0 then self:SetChangingWeaponZPosValueCounterLerpTime( CurTime() ) end
+
 		-- -- --     ----------
 		--- -- - Movement -- -
 		------------ -- -------
 		if self:GetMoveWeaponUp() then
-			local _newVal = extraZ + __amountUp
-			
-			-- Increase
-			self:SetExtraZ(_newVal)
-		else
-			local percentage = extraZ / (extraZ + __amountUp)
 
-			-- Maybe need to componsate (depends one the up value)
-			percentage = (percentage - 0.0016)
+			local newZPositionValueCounterGoingUp = Lerp(
 
-			--- -- --- -
-			-- Move faster...
-			if percentage <= 0.99148 then self:SetAmountDown(0.01) end
-			if percentage <= 0.9912 then self:SetAmountDown(0.02) end
-			if percentage <= 0.9905 then self:SetAmountDown(0.05) end
-			if percentage <= 0.98814 then self:SetAmountDown(0.072) end
+				( CurTime() - self:GetChangingWeaponZPosValueCounterLerpTime() ),
+				ChangingWeaponZPosValueCounter,
+				ChangingWeaponZPosValueCounter + self:GetAmountUp()
 
-			local _newVal = extraZ - __amountDown
+			)
 
-			-- The model is will start to dissapear
-			if (
-				not self:GetStartingToDissapear() and
-				_newVal <= __LowerLimit * 4.75
-			) then
-				self:SetStartingToDissapear(true)
+			-- Increase ( Set next Z-Position )
+			self:SetChangingWeaponZPosValueCounter( newZPositionValueCounterGoingUp )
 
-				if not self or not self:IsValid() then return end
+			-- Start moving down instead...
+			if ChangingWeaponZPosValueCounter >= self:GetEndPositionTopCounter() then
+				
+				self:SetMoveWeaponUp( false )
+				self:SetEndPositionTopGoReallySlowSecondsLastCount( CurTime() )
 
-				self:SetModelScale(0, (__amountDown * (__LowerLimit * 9.8)))
 			end
 
+		else
+
+			local limit = 0.93
+
+			local percetage = 0.999995 -- Lower = Lower Speed
+			local amountDownDivision = ( self:GetAmountDown() / self:GetAmountDownOriginalValue() )
+
+			-- Move faster
+			if self:GetEndPositionTopGoReallySlowSecondsLastCount() >= 0 then
+
+				local currentSecondsOn = ( CurTime() - self:GetEndPositionTopGoReallySlowSecondsLastCount() )
+
+				-- Make it go slower...
+				percetage = 0.005
+				local scalar = 2
+
+				-- Higest to lowest
+				if currentSecondsOn >= ( self:GetEndPositionTopGoReallySlowSeconds() / 2 ) then scalar = 100
+				elseif currentSecondsOn >= ( self:GetEndPositionTopGoReallySlowSeconds() / 3 ) then scalar = 50
+				elseif currentSecondsOn >= ( self:GetEndPositionTopGoReallySlowSeconds() / 4 ) then scalar = 30
+				elseif currentSecondsOn >= ( self:GetEndPositionTopGoReallySlowSeconds() / 5 ) then scalar = 10 end
+
+				percetage = percetage * scalar
+
+				-- Finished
+				if currentSecondsOn >= self:GetEndPositionTopGoReallySlowSeconds() then
+
+					self:SetEndPositionTopGoReallySlowSecondsLastCount( -1 )
+
+				end
+
+			else
+
+				-- Go even faster down
+				if ChangingWeaponZPosValueCounter > 0 and ( self:GetEndPositionBottomCounter() / ChangingWeaponZPosValueCounter ) <= -1.83 then percetage = 1.5
+				elseif ChangingWeaponZPosValueCounter < 0 then percetage = 2 end
+
+			end
+
+			local newZPositionValueCounterGoingDown = Lerp(
+
+				( CurTime() - self:GetChangingWeaponZPosValueCounterLerpTime() ),
+				ChangingWeaponZPosValueCounter,
+				( ChangingWeaponZPosValueCounter - self:GetAmountDown() * percetage )
+
+			)
+
 			-- Decrease
-			if _newVal > __LowerLimit then self:SetExtraZ(_newVal) elseif _newVal <= __LowerLimit then
+			if newZPositionValueCounterGoingDown > self:GetEndPositionBottomCounter() then
+
+				-- Decrease ( Set next Z-Position )
+				self:SetChangingWeaponZPosValueCounter( newZPositionValueCounterGoingDown )
+			
+			else
+
 				self:GetParentBoxEntity():WeaponExpired()
 
 				-- Remove Weapon (finished)
 				self:Remove()
+
 			end
+
+		end
+
+	end
+
+	if ( CurTime() - self:GetChangingWeaponZPosValueCounterLerpTime() ) > 0.05 then self:SetChangingWeaponZPosValueCounterLerpTime( CurTime() ) end
+
+	self:NextThink( CurTime() + 0.002 )
+	return true
+
+end
+
+function ENT:Use( activator, caller, useType, value )
+
+	local MysteryBox = self:GetParentBoxEntity()
+
+	if not MysteryBox and ( _parentBox and not MysteryBox:IsValid() ) and not _parentBox.GetWeaponEntity then return end
+
+	-- The Weapon can be close to activator... Then allow also to click "use" key
+	local weaponChild = MysteryBox:GetWeaponEntity()
+	local weaponIsCloseEnough = false
+
+	if weaponChild and weaponChild:IsValid() then
+		weaponChild:MaybeAdjustTheChanceToGetATeddybear()
+
+		if activator:GetPos():Distance(weaponChild:GetPos()) <= 85 then
+			weaponIsCloseEnough = true
 		end
 	end
 
-	self:NextThink(CurTime())
+	if not Bo3RavoMBDIsPlayerAllowedToActivate( MysteryBox, activator, weaponIsCloseEnough ) then return end
+	Bo3RavoMBDMysteryBoxTakeWeapon( MysteryBox, activator, weaponChild )
+
 	return true
+
 end

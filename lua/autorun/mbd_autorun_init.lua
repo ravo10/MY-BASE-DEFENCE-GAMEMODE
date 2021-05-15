@@ -2,7 +2,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
     AddCSLuaFile()
 
     -- Important to update, to visually notify users
-    MBDTextCurrentVersion = "Stable 0.0.2061"
+    MBDTextCurrentVersion = "Stable 0.0.2062"
     MBDRoot_folder_path = "my_base_defence" -- Used for custom spawn lists etc.
 
     if CLIENT then
@@ -653,26 +653,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
 
     -- NET.Receive
     if CLIENT then
-        --- - --- -
-        -- Get nice weapon names
-        function mbd_bo3_ravo_getNiceWeaponNames()
-            __NAME_Weapons = {}
 
-            for _,WepData in pairs(list.Get("Weapon")) do
-                if (
-                    WepData.ClassName and
-                    WepData.PrintName and
-                    WepData.Category
-                ) then
-                    __NAME_Weapons[string.lower(WepData.ClassName)] = WepData.PrintName.." ("..WepData.Category..")"
-                elseif (
-                    WepData.ClassName and
-                    WepData.PrintName
-                ) then
-                    __NAME_Weapons[string.lower(WepData.ClassName)] = WepData.PrintName
-                end
-            end
-        end
         net.Receive("Entity_EmitLocalSoundEmitter", function()
             local _Table = net.ReadTable()
             
@@ -963,7 +944,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
         -- THIS LOGIC IS FOR MYSTERY BOX
         hook.Add("PlayerInitialSpawn", "mbd_MysteryBox_PlayerInitialSpawn001", function(pl)
             if pl and pl:IsValid() then
-                pl:SendLua([[mbd_bo3_ravo_getNiceWeaponNames()]])
+                pl:SendLua([[MBDbo3RavoGetNiceWeaponNames()]])
             end
         end)
         -----------------------------

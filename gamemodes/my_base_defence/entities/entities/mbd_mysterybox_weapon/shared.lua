@@ -7,42 +7,57 @@ ENT.Spawnable 		= false
 ENT.AdminSpawnable = false
 
 function ENT:SetupDataTables()
+	
 	self:NetworkVar("Bool", 0, "MoveWeaponUp")
 	self:NetworkVar("Bool", 1, "StartingToDissapear")
 
 	self:NetworkVar("String", 0, "CurrentWeaponClassSwitch")
 
-	self:NetworkVar("Float", 0, "CycleLastSecond")
-	self:NetworkVar("Float", 1, "CycleNextSecond")
+	self:NetworkVar("Float", 0, "CycleDurationScalar")
+	self:NetworkVar("Float", 1, "CycleUntilNextWepInSecond")
 	self:NetworkVar("Float", 2, "AmountUp")
 	self:NetworkVar("Float", 3, "AmountDown")
-	self:NetworkVar("Float", 4, "UpperLimit")
-	self:NetworkVar("Float", 5, "LowerLimit")
-	self:NetworkVar("Float", 6, "TeddybearRisk")
-	self:NetworkVar("Float", 7, "ExtraZ")
+	self:NetworkVar("Float", 4, "AmountDownOriginalValue")
+	self:NetworkVar("Float", 5, "StartPositionZPos")
+	self:NetworkVar("Float", 6, "EndPositionTopCounter")
+	self:NetworkVar("Float", 7, "EndPositionTopGoReallySlowSeconds")
+	self:NetworkVar("Float", 8, "EndPositionTopGoReallySlowSecondsLastCount")
+	self:NetworkVar("Float", 9, "EndPositionBottomCounter")
+	self:NetworkVar("Float", 10, "ChangingWeaponZPosValueCounter")
+	self:NetworkVar("Float", 11, "ChangingWeaponZPosValueCounterLerpTime")
+	self:NetworkVar("Float", 12, "TeddybearRisk")
 
 	self:NetworkVar("Entity", 0, "OwnerPlayer")
 	self:NetworkVar("Entity", 1, "ParentBoxEntity")
 
 	if SERVER then
+
 		--- Set First Time
-		self:SetMoveWeaponUp(true)
-		self:SetStartingToDissapear(false)
+		self:SetMoveWeaponUp( true )
+		self:SetStartingToDissapear( false )
 
-		self:SetCurrentWeaponClassSwitch("")
+		self:SetCurrentWeaponClassSwitch( "" )
 
-		self:SetCycleLastSecond(4)
-		self:SetCycleNextSecond(0.16)
-		self:SetAmountUp(0.3)
-		self:SetAmountDown(0.0005)
-		self:SetUpperLimit(43)
-		self:SetLowerLimit(5)
-		self:SetTeddybearRisk( GetConVar("mbd_mysterybox_bo3_ravo_teddybearGetChance"):GetFloat() )
-		self:SetExtraZ(-13) -- Juster??
+		self:SetCycleDurationScalar( 4 ) -- Higher = Faster
+		self:SetCycleUntilNextWepInSecond( 0.1 ) -- Lower = Faster
 
-		self:SetOwnerPlayer(nil)
-		self:SetParentBoxEntity(nil)
+		self:SetAmountUp( 2.3 ) -- Speed; Higher = Faster
+		self:SetAmountDown( 1.68 ) -- Speed; Higher = Faster
+		self:SetAmountDownOriginalValue( self:GetAmountDown() ) -- Static
+
+		self:SetStartPositionZPos( 33 ) -- Static
+		self:SetEndPositionTopCounter( 23 ) -- Static
+		self:SetEndPositionTopGoReallySlowSeconds( 5 ) -- Static
+		self:SetEndPositionBottomCounter( -20 ) -- Static
+		self:SetChangingWeaponZPosValueCounterLerpTime( -1 ) -- Dynamic
+		
+		self:SetTeddybearRisk( GetConVar( "mbd_mysterybox_bo3_ravo_teddybearGetChance" ):GetFloat() )
+
+		self:SetOwnerPlayer( nil )
+		self:SetParentBoxEntity( nil )
+
 	end
+
 end
 
 function DisablePhysgunning(ply, ent)

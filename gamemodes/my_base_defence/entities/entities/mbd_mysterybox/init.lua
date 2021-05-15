@@ -75,64 +75,12 @@ end
 ----------------
 -- Initialize --
 ----------------
-function ENT:Initialize()
-	self:SetName("mbd_ent")
-	
-	self:SetUseType(SIMPLE_USE)
-	
-	self:SetModel("models/mysterybox_bo3/mysterybox_bo3.mdl")
-	self:PhysicsInit(SOLID_VPHYSICS)
-	self:SetSolid(SOLID_VPHYSICS)
-
-	local phys = self:GetPhysicsObject()
-	if phys:IsValid() then
-		phys:Wake()
-	end
-
-	if GetConVar("mbd_mysterybox_bo3_ravo_disableAllParticlesEffects"):GetInt() <= 0 then
-		self:ResetSequence("idle_box")
-	end
-end
-------------
--- Damage --
-------------
-function ENT:OnTakeDamage(dmginfo)
-	local damageAmount = dmginfo:GetDamage()
-
-	local currHealth = self:GetMysteryboxHealth()
-	if GetConVar("bo3ravo_mysterybox_bo3_ravo_MysteryBoxTotalHealth"):GetInt() <= 0 then currHealth = nil end
-
-	local newHealth = ( ( currHealth or 0 ) - damageAmount )
-	------ -- -
-	-- Set health
-	if newHealth > 0 then self:SetMysteryboxHealth( newHealth ) elseif currHealth then
-		-- Destroy
-		self:Remove()
-		mbd_Bo3Ravo_SpawnKillmodelProps( self, { "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl" }, 0 )
-	end
-end
-----------
--- USE --
-----------
-function ENT:Use(activator, caller, useType, value)
-	if not activator or not activator:IsValid() or not activator:IsPlayer() then return end
-
-	-- The Weapon can be close to activator... Then allow also to click "use" key
-	local weaponChild = self:GetWeaponEntity(nil)
-	local weaponIsCloseEnough = false
-
-	if weaponChild and weaponChild:IsValid() then
-		weaponChild:MaybeAdjustTheChanceToGetATeddybear()
-		
-		if activator:GetPos():Distance(weaponChild:GetPos()) <= 85 then
-			weaponIsCloseEnough = true
-		end
-	end
+function Bo3RavoMBDIsPlayerAllowedToActivate( self, activator, weaponIsCloseEnough )
 
 	local canUseBox = self:GetCanUseBox()
 
 	-- ** Cancle
-	-- Check if Player is allowed to activate this (is withing it's bound area/trigger area)
+	-- Check if Player is allowed to activate this (is within it's bound area/trigger area)
 	local maybePlayerCanActivateThisMysterybox = string.Split(activator:GetNWString("CanActivateMysteryboxMBD"), ";")
 	local PlayerCanActivateThisBox = table.HasValue(maybePlayerCanActivateThisMysterybox, tostring(self:EntIndex()))
 	if (
@@ -160,245 +108,276 @@ function ENT:Use(activator, caller, useType, value)
 			self:EmitSound("mysterybox_bo3/chains_locked.wav")
 
 			if ShowMysteryBoxNotification() then
-				activator:SendLua([[notification.AddLegacy("Don't touch me! ｡゜(｀Д´)゜｡ I am not ready yet... (says the angry feminist)", NOTIFY_ERROR, 2)]])
+				activator:SendLua( [[notification.AddLegacy( "Don't touch me! ｡゜(｀Д´)゜｡", NOTIFY_ERROR, 2 )]] )
 			end
 		end
 
-		return
-	end
-
-	if (
-		canUseBox and
-		self:GetHasValidAngles()
-	) then
-		-- Make the Player Pay for it (maybe)
-		-- -
-		local _price = self:GetMysteryboxPriceToBuy()
-		if _price == -1 then print("MysteryBox: Could not get 'mysteryboxPriceToBuy'...") return end
-		local currMoney = activator:GetNWInt("money", value)
-
-		-- Only non-Admins have to Pay hard earned cashh
-		if activator:MBDIsNotAnAdmin(true) then
-			if currMoney > _price then
-				local newPlayerMoneyAmount = (currMoney - _price)
-	
-				--- -- -
-				-- Save The new Money Balance
-				activator:SetNWInt("money", newPlayerMoneyAmount)
-			else
-				ClientPrintAddTextMessage(activator, {Color(254, 208, 0), "You don't have enough cash... missing ", Color(254, 81, 0), (_price - currMoney), Color(173, 254, 0), " £B.D."})
-	
-				return
-			end
-		end
-
-		-- Open the box and Spawn the "Weapons" entity
-		self:SetCanUseBox(false)
-		self:PlayerBoughtAWeapon()
-
-		local wep = ents.Create("mbd_mysterybox_weapon")
-		-- Start Position For Weapon
-		--wep:SetPos(self:GetPos() - Vector(0, -6.5, 10))
-		wep:SetAngles(self:GetAngles() - Angle(0, 90, 0))
-	
-		------- -
-		-- Save the relationship between the two
-		--          -----------
-		self:SetWeaponEntity(wep)
-		wep:SetParentBoxEntity(self)
-		wep:SetOwnerPlayer(activator)
-
-		wep:Spawn()
-
-		-- Add to the amount of uses
-		self:SetAmountOfUses(self:GetAmountOfUses() + 1)
-	elseif (
-		not self:GetCanUseBox() and
-		weaponChild and
-		weaponChild:IsValid()
-	) then
-		-- Only the one who bought the weapon can take it
-		local _OwnerOfWeapon = weaponChild:GetOwnerPlayer()
-		if (
-			(
-				_OwnerOfWeapon or
-				_OwnerOfWeapon:IsValid()
-			) and (
-				_OwnerOfWeapon ~= activator
-			)
-		) then
-			if ShowMysteryBoxNotification() then
-				activator:SendLua([[notification.AddLegacy("Don't try and steal others weapon ┌(▀Ĺ̯▀)┐", NOTIFY_ERROR, 2)]])
-			end
-			
-			return
-		end
-
-		----------------- -- --------------
-		-- Give the weapon in the box -----
-		----------------- -- ---------------
-		local weaponClass = weaponChild:GetCurrentWeaponClassSwitch()
-
-		-- Take away the weapon (if set)
-		if GetConVar("mbd_mysterybox_bo3_ravo_exchangeWeapons"):GetInt() > 0 then
-			local playerActiveWeaponClass = activator:GetActiveWeapon():GetClass()
-
-			-- A tool is active
-			if (
-				playerActiveWeaponClass == "gmod_tool" or
-				playerActiveWeaponClass == "weapon_physgun" or
-				playerActiveWeaponClass == "weapon_physcannon" or
-				playerActiveWeaponClass == "swep_prop_repair" or
-				playerActiveWeaponClass == "swep_vehicle_repair"
-			) then
-				local PlayerHasAnotherWeapon = false
-
-				-- Check if Player has any other Weapons that is not any of The Basics...
-				local playersWeapons = activator:GetWeapons()
-				for _,Weapon in pairs(playersWeapons) do
-					local __WepClass = Weapon:GetClass()
-
-					if (
-						__WepClass ~= "gmod_tool" and
-						__WepClass ~= "weapon_physgun" and
-						__WepClass ~= "weapon_physcannon" and
-						__WepClass ~= "swep_prop_repair" and
-						__WepClass ~= "swep_vehicle_repair"
-					) then
-						PlayerHasAnotherWeapon = true
-
-						break
-					end
-				end
-
-				-- Decide
-				if PlayerHasAnotherWeapon then
-					if ShowMysteryBoxNotification() then
-						activator:SendLua([[notification.AddLegacy("You can't swap out this Tool!", NOTIFY_ERROR, 3.4)]])
-					end
-
-					return
-				end
-			else
-				-- Check if Player has this weapon from before...
-				-- if he has, tell him he must have that weapon active to take it
-				local PlayerHasThisCurrentWeapon = false
-				local PlayerHasThisCurrentWeaponEquiped = false
-
-				local playersWeapons = activator:GetWeapons()
-				for _,Weapon in pairs(playersWeapons) do
-					local __WepClass = Weapon:GetClass()
-
-					if __WepClass == weaponClass then
-						PlayerHasThisCurrentWeapon = true
-
-						if __WepClass == playerActiveWeaponClass then
-							PlayerHasThisCurrentWeaponEquiped = true
-						end
-
-						break
-					end
-				end
-
-				if PlayerHasThisCurrentWeapon then
-					if not PlayerHasThisCurrentWeaponEquiped then
-						if ShowMysteryBoxNotification() then
-							activator:SendLua([[notification.AddLegacy("You have this weapon! Equip it to take.", NOTIFY_GENERIC, 4.5)]])
-						end
-
-						return
-					end
-				end
-
-				-- Player has NOT a tool active
-				activator:StripWeapon(playerActiveWeaponClass)
-			end
-		end
-
-		self:SetCanTakeWeapon(false)
-
-		activator:Give(weaponClass)
-		activator:SelectWeapon(weaponClass)
-
-		-- Give ammo if Player got Zero nil nadda
-		local playersActiveWeapon = activator:GetActiveWeapon()
-		local wasNilAmmo = false -- Only used for primary
-
-		local primaryAmmoType = playersActiveWeapon:GetPrimaryAmmoType()
-		if primaryAmmoType < 0 then
-			-- Probably not necaserry...
-			if playersActiveWeapon.Primary then
-				local __PrimAmmoStringFromTable = playersActiveWeapon.Primary.Ammo
-				if __PrimAmmoStringFromTable then
-					-- Found the string-ID for it
-					primaryAmmoType = __PrimAmmoStringFromTable
-				else
-					primaryAmmoType = false
-				end
-			else
-				primaryAmmoType = false
-			end
-		end
-		local secondaryAmmoType = playersActiveWeapon:GetPrimaryAmmoType()
-		if secondaryAmmoType < 0 then
-			-- Probably not necaserry...
-			if playersActiveWeapon.Secondary then
-				local __SecAmmoStringFromTable = playersActiveWeapon.Secondary.Ammo
-				if __SecAmmoStringFromTable then
-					-- Found the string-ID for it
-					secondaryAmmoType = __SecAmmoStringFromTable
-				else
-					secondaryAmmoType = false
-				end
-			else
-				secondaryAmmoType = false
-			end
-		end
-		-- -- -
-		-- -
-		if (
-			playersActiveWeapon:GetPrimaryAmmoType() >= 0 and
-			activator:GetAmmoCount(playersActiveWeapon:GetPrimaryAmmoType()) == 0
-		) then
-			wasNilAmmo = true
-			timer.Simple(1.5, function()
-				activator:GiveAmmo(3, playersActiveWeapon:GetPrimaryAmmoType(), true)
-			end)
-		end
-		if (
-			playersActiveWeapon:GetSecondaryAmmoType() >= 0 and
-			activator:GetAmmoCount(playersActiveWeapon:GetSecondaryAmmoType()) == 0
-		) then
-			timer.Simple(1.5, function()
-				activator:GiveAmmo(3, playersActiveWeapon:GetSecondaryAmmoType(), true)
-			end)
-		end
-
-		-- Give 25 rounds of primary
-		if not wasNilAmmo then
-			timer.Simple(1.5, function()
-				activator:GiveAmmo(25, playersActiveWeapon:GetPrimaryAmmoType(), true)
-			end)
-		end
-
-		weaponChild:SetRenderMode(RENDERMODE_TRANSALPHA)
-		weaponChild:SetColor(Color(0, 0, 0, 0))
-		weaponChild:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
-		-- -- -
-		-- Delete "Weapon" as it is now taken by the Player
-		timer.Simple(0.3, function()
-			if (
-				weaponChild:IsValid() and
-				weaponChild:GetParentBoxEntity():IsValid()
-			) then
-				weaponChild:GetParentBoxEntity():WeaponTaken()
-
-				weaponChild:Remove()
-			end
-		end)
+		return false
 	end
 
 	return true
+
+end
+function Bo3RavoMBDMysteryBoxTakeWeapon( self, activator, weaponChild )
+
+	-- Only the one who "bought" the weapon can take it
+	local _OwnerOfWeapon = weaponChild:GetOwnerPlayer()
+	if (
+		(
+			_OwnerOfWeapon or
+			_OwnerOfWeapon:IsValid()
+		) and (
+			_OwnerOfWeapon ~= activator
+		)
+	) then
+		if ShowMysteryBoxNotification() then
+			activator:SendLua( [[notification.AddLegacy("Don't try and steal others weapon ┌(▀Ĺ̯▀)┐", NOTIFY_ERROR, 2)]] )
+		end
+		
+		return
+	end
+
+	----------------- -- --------------
+	-- Give the weapon in the box -----
+	----------------- -- ---------------
+	local WeaponClassFromBox = weaponChild:GetCurrentWeaponClassSwitch()
+	if not WeaponClassFromBox then return end
+
+	if not MBDbo3RavoNiceWeaponNamesGame then bo3RavoGetNiceWeaponNames() end
+
+	local PlayerActiveWeaponClass = activator:GetActiveWeapon():GetClass()
+	local PlayerHasTheCurrentWeaponEquiped = WeaponClassFromBox == PlayerActiveWeaponClass
+	local PlayerHasTheCurrentWeaponInHisArsenal = false
+
+	local PlayerHasStockWeaponEquiped = false
+
+	local notAllowedToExhangeSWEPs = {
+		"gmod_tool",
+		"gmod_camera",
+		"weapon_physgun",
+		"weapon_physcannon",
+		"swep_prop_repair",
+		"swep_vehicle_repair"
+	}
+
+	-- Check if Player has any other Weapons that is not any of The Basics...
+	local PlayersWeapons = activator:GetWeapons()
+	local playerWeaponsCount = #PlayersWeapons
+
+	local PlayerHasStockWeaponEquiped = table.HasValue( notAllowedToExhangeSWEPs, PlayerActiveWeaponClass )
+
+	-- Count how many of the Players weapons are stock weapons
+	local stockWeaponsCounter = 0 for _,Weapon in pairs( PlayersWeapons ) do
+
+		local class = Weapon:GetClass()
+
+		if table.HasValue( notAllowedToExhangeSWEPs, class ) then stockWeaponsCounter = stockWeaponsCounter + 1 end
+		if class == WeaponClassFromBox then PlayerHasTheCurrentWeaponInHisArsenal = true end
+
+	end
+	-- If true, just give it to the Player
+	local allWeaponsAreStockWeapons = stockWeaponsCounter == playerWeaponsCount
+
+	-- Take away the weapon (if set)
+	if GetConVar("mbd_mysterybox_bo3_ravo_exchangeWeapons"):GetInt() > 0 then
+
+		-- Remove all SWEP ammo ( balance )
+		if not PlayerHasTheCurrentWeaponInHisArsenal and not PlayerHasTheCurrentWeaponEquiped then
+
+			local currentActiveWeaponBeforeChange = activator:GetActiveWeapon()
+
+			activator:RemoveAmmo( activator:GetAmmoCount( currentActiveWeaponBeforeChange:GetPrimaryAmmoType() ), currentActiveWeaponBeforeChange:GetPrimaryAmmoType() )
+			activator:RemoveAmmo( activator:GetAmmoCount( currentActiveWeaponBeforeChange:GetSecondaryAmmoType() ), currentActiveWeaponBeforeChange:GetSecondaryAmmoType() )
+
+		end
+
+		-- Player has a non-stock weapon equiped
+		if not PlayerHasTheCurrentWeaponInHisArsenal and not allWeaponsAreStockWeapons then activator:StripWeapon( PlayerActiveWeaponClass ) end
+
+	end
+
+	-- Select the new SWEP
+	self:SetCanTakeWeapon( false )
+
+	-- Give SWEP
+	activator:Give( WeaponClassFromBox )
+
+	if not PlayerHasTheCurrentWeaponEquiped and ShowMysteryBoxNotification() then
+
+		activator:SendLua( [[notification.AddLegacy( "You picked up: ]] .. MBDbo3RavoNiceWeaponNamesGame[ WeaponClassFromBox ] .. [[", NOTIFY_GENERIC, 4 )]] )
+
+	end
+
+	-- Give ammo if Player got Zero nil nadda
+	local playersActiveWeapon = activator:GetActiveWeapon()
+
+	local WasNilPrimaryAmmo = false
+	local WasNilSecondaryAmmo = false
+
+	local primaryAmmoType = playersActiveWeapon:GetPrimaryAmmoType() if primaryAmmoType < 0 then
+		-- Probably not necaserry...
+		if playersActiveWeapon.Primary then
+			local __PrimAmmoStringFromTable = playersActiveWeapon.Primary.Ammo
+			if __PrimAmmoStringFromTable then
+				-- Found the string-ID for it
+				primaryAmmoType = __PrimAmmoStringFromTable
+			else
+				primaryAmmoType = false
+			end
+		else
+			primaryAmmoType = false
+		end
+	end
+
+	local secondaryAmmoType = playersActiveWeapon:GetSecondaryAmmoType() if secondaryAmmoType < 0 then
+		-- Probably not necaserry...
+		if playersActiveWeapon.Secondary then
+			local __SecAmmoStringFromTable = playersActiveWeapon.Secondary.Ammo
+			if __SecAmmoStringFromTable then
+				-- Found the string-ID for it
+				secondaryAmmoType = __SecAmmoStringFromTable
+			else
+				secondaryAmmoType = false
+			end
+		else
+			secondaryAmmoType = false
+		end
+	end
+
+	-- Give
+	if PlayerHasTheCurrentWeaponInHisArsenal then
+
+		local NewWeaponEnt for _, Weapon in pairs( activator:GetWeapons() ) do if Weapon:GetClass() == WeaponClassFromBox then NewWeaponEnt = Weapon break end end
+
+		local primaryAmmo = NewWeaponEnt:GetPrimaryAmmoType()
+		local secondaryAmmo = NewWeaponEnt:GetSecondaryAmmoType()
+
+		activator:GiveAmmo( 25, primaryAmmo, false )
+		activator:GiveAmmo( 3, secondaryAmmo, false )
+
+		local ThereIsActuallyAmmoAvailable = ( primaryAmmo >= 0 or secondaryAmmo >= 0 )
+
+		-- If the Player already got the SWEP, just give ammo
+		if PlayerHasTheCurrentWeaponEquiped and ShowMysteryBoxNotification() then
+
+			if ThereIsActuallyAmmoAvailable then
+			
+				activator:SendLua( [[notification.AddLegacy( "You already have: ]] .. MBDbo3RavoNiceWeaponNamesGame[ WeaponClassFromBox ] .. [[; gave ammo", NOTIFY_GENERIC, 4 )]] )
+
+			else
+				
+				activator:SendLua( [[notification.AddLegacy( "You already have: ]] .. MBDbo3RavoNiceWeaponNamesGame[ WeaponClassFromBox ] .. [[", NOTIFY_GENERIC, 4 )]] )
+
+			end
+
+		end
+
+	end
+
+	-- Select SWEP
+	timer.Simple( 0, function() activator:SelectWeapon( WeaponClassFromBox ) end )
+
+	weaponChild:SetRenderMode( RENDERMODE_TRANSALPHA )
+	weaponChild:SetColor( Color(0, 0, 0, 0) )
+	weaponChild:SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE )
+
+	-- Delete "Weapon" as it is now taken by the Player
+	timer.Simple( 0.3, function()
+
+		if weaponChild:IsValid() and weaponChild:GetParentBoxEntity():IsValid() then
+
+			weaponChild:GetParentBoxEntity():WeaponTaken()
+			weaponChild:Remove()
+
+		end
+
+	end )
+
+end
+
+function ENT:Initialize()
+	self:SetName("mbd_ent")
+	
+	self:SetUseType(SIMPLE_USE)
+	
+	self:SetModel("models/mysterybox_bo3/mysterybox_bo3.mdl")
+	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetSolid(SOLID_VPHYSICS)
+
+	local phys = self:GetPhysicsObject()
+	if phys:IsValid() then
+		phys:Wake()
+	end
+
+	if GetConVar("mbd_mysterybox_bo3_ravo_disableAllParticlesEffects"):GetInt() <= 0 then
+		self:ResetSequence("idle_box")
+	end
+end
+------------
+-- Damage --
+------------
+function ENT:OnTakeDamage(dmginfo)
+	local damageAmount = dmginfo:GetDamage()
+
+	local currHealth = self:GetMysteryboxHealth()
+	if GetConVar("mbd_mysterybox_bo3_ravo_MysteryBoxTotalHealth"):GetInt() <= 0 then currHealth = nil end
+
+	local newHealth = ( ( currHealth or 0 ) - damageAmount )
+	------ -- -
+	-- Set health
+	if newHealth > 0 then self:SetMysteryboxHealth( newHealth ) elseif currHealth then
+		-- Destroy
+		self:Remove()
+		mbd_Bo3Ravo_SpawnKillmodelProps( self, { "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl", "models/hunter/blocks/cube025x025x025.mdl" }, 0 )
+	end
+end
+----------
+-- USE --
+----------
+function ENT:Use(activator, caller, useType, value)
+
+	if not activator or not activator:IsValid() or not activator:IsPlayer() then return end
+
+	-- The Weapon can be close to activator... Then allow also to click "use" key
+	local weaponChild = self:GetWeaponEntity()
+	local weaponIsCloseEnough = false
+
+	if weaponChild and weaponChild:IsValid() then
+
+		weaponChild:MaybeAdjustTheChanceToGetATeddybear()
+
+		if activator:GetPos():Distance(weaponChild:GetPos()) <= 85 then weaponIsCloseEnough = true end
+
+	end
+
+	local canUseBox = self:GetCanUseBox()
+
+	if not Bo3RavoMBDIsPlayerAllowedToActivate( self, activator, weaponIsCloseEnough ) then return end
+
+	if canUseBox and self:GetHasValidAngles() then
+
+		-- Open the box and Spawn the "Weapons" entity
+		self:SetCanUseBox( false )
+		self:PlayerBoughtAWeapon()
+
+		local MysteryBoxSWEP = ents.Create( "mbd_mysterybox_weapon" )
+
+		------- -
+		-- Save the relationship between the two
+		--          -----------
+		self:SetWeaponEntity( MysteryBoxSWEP )
+		MysteryBoxSWEP:SetParentBoxEntity( self )
+		MysteryBoxSWEP:SetOwnerPlayer( activator )
+
+		MysteryBoxSWEP:Spawn()
+
+		-- Add to the amount of uses
+		self:SetAmountOfUses( self:GetAmountOfUses() + 1 )
+
+	elseif not canUseBox and weaponChild and weaponChild:IsValid() then Bo3RavoMBDMysteryBoxTakeWeapon( self, activator, weaponChild ) end
+
+	return true
+
 end
 -----------
 -- SOUND --
@@ -427,6 +406,24 @@ local soundTable = {
 		}
 	}
 }
+
+local allPossibleSounds = {
+
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "latch" ][ "open" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "latch" ][ "close" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "latch" ][ "music_box" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "latch_wep_taken" ][ "purchase" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "latch_wep_taken" ][ "close" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "child" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "bye_bye" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "disappear" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "whoosh" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "poof" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "land" ],
+	soundTable[ "basePath" ] .. soundTable[ "mysterybox_bo3" ][ "teddybear" ][ "rich" ]
+
+}
+
 function ENT:HandleAnimEvent(event, eventTime, cycle, type, options)
 	if (
 		event == 32 and
@@ -669,3 +666,10 @@ net.Receive("mbd:cheatCode_MysteryboxRavo001", function(len, pl)
 		end
 	end
 end)
+
+function ENT:OnRemove()
+
+	-- Stop all sounds
+	for _, sound in pairs( allPossibleSounds ) do self:StopSound( sound ) end
+
+end

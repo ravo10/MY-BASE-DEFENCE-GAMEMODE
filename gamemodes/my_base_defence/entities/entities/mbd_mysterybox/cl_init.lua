@@ -56,7 +56,7 @@ surface.CreateFont("coolvetica10", {
 	outline 	= false
 })
 
-local __drawText = function(text, xPos, color)
+function __MBDBo3RavoNorwayMysteryBoxDrawText( text, xPos, color )
 	local _xPos = ScrW() / 2
 	if xPos then _xPos = xPos end
 
@@ -72,7 +72,7 @@ local __drawText = function(text, xPos, color)
 		TEXT_ALIGN_CENTER
 	)
 end
-local _getTextWidth = function(text)
+function _MBDBo3RavoNorwayMysteryBoxGetTextWidth( text )
 	surface.SetFont("coolvetica10")
 	surface.SetTextColor(0, 0, 0, 0)
 	surface.SetTextPos(0, 0)
@@ -115,12 +115,12 @@ hook.Add("HUDPaint", "mbd:mysteryboxHUD001", function()
 					local text0, text1, text2 = "Press ", "E ", "for Mystery Box [Cost: "..ent:GetMysteryboxPriceToBuy().."]"
 					
 					local baseWidthPos = ScrW() / 2
-					local width0, width1, width2 = _getTextWidth(text0), _getTextWidth(text1), _getTextWidth(text2)
+					local width0, width1, width2 = _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text0), _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text1), _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text2)
 
 					-- Draw
-					__drawText(text0, (baseWidthPos - width0))
-					__drawText(text1, (baseWidthPos - width1), Color(255, 226, 96, 250))
-					__drawText(text2, (baseWidthPos + width2 - (width1 + width0 * 2 + 5)))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text0, (baseWidthPos - width0))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text1, (baseWidthPos - width1), Color(255, 226, 96, 250))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text2, (baseWidthPos + width2 - (width1 + width0 * 2 + 5)))
 				elseif (
 					ent:GetCanTakeWeapon() and
 					_OwnerOfWeapon == LocalPlayer()
@@ -128,12 +128,12 @@ hook.Add("HUDPaint", "mbd:mysteryboxHUD001", function()
 					local text0, text1, text2 = "Press ", "E ", "for Weapon"
 					
 					local baseWidthPos = ScrW() / 2
-					local width0, width1, width2 = _getTextWidth(text0), _getTextWidth(text1), _getTextWidth(text2)
+					local width0, width1, width2 = _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text0), _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text1), _MBDBo3RavoNorwayMysteryBoxGetTextWidth(text2)
 
 					-- Draw
-					__drawText(text0, (baseWidthPos - width0))
-					__drawText(text1, (baseWidthPos - width1), Color(255, 226, 96, 250))
-					__drawText(text2, (baseWidthPos + width2 - (width0 + 3)))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text0, (baseWidthPos - width0))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text1, (baseWidthPos - width1), Color(255, 226, 96, 250))
+					__MBDBo3RavoNorwayMysteryBoxDrawText(text2, (baseWidthPos + width2 - (width0 + 3)))
 				end
 			end
 		end

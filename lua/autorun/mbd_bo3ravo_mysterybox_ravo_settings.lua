@@ -1,6 +1,35 @@
 if engine.ActiveGamemode() == "my_base_defence" then -- Very important
 	AddCSLuaFile()
 
+    -- Get nice weapon names
+    function MBDbo3RavoGetNiceWeaponNames()
+
+        MBDbo3RavoNiceWeaponNamesGame = {}
+
+        for _,WepData in pairs( list.Get( "Weapon" ) ) do
+
+            if WepData.ClassName and WepData.PrintName and WepData.Category then
+                MBDbo3RavoNiceWeaponNamesGame[ WepData.ClassName ] = WepData.PrintName .." (" .. WepData.Category .. ")"
+            elseif WepData.ClassName and WepData.PrintName then
+                MBDbo3RavoNiceWeaponNamesGame[ WepData.ClassName ] = WepData.PrintName
+            elseif WepData.ClassName then
+                MBDbo3RavoNiceWeaponNamesGame[ WepData.ClassName ] = WepData.ClassName
+            end
+
+        end
+
+        return MBDbo3RavoNiceWeaponNamesGame
+
+    end
+
+    -- Init
+    timer.Create( "mbd:Bo3RavoMysteryBoxLoadNiceNamesFirstTime001", 0.3, 0, function()
+
+        -- Load
+        if list.Get( "Weapon" ) then timer.Remove( "mbd:Bo3RavoMysteryBoxLoadNiceNamesFirstTime001" ) MBDbo3RavoGetNiceWeaponNames() end
+
+    end )
+
     if SERVER then
 
         util.AddNetworkString("mbd_mysteryBox:setServerConVar")
@@ -138,7 +167,7 @@ if engine.ActiveGamemode() == "my_base_defence" then -- Very important
                 local disableAllParticlesEffects = addItemBoolean( "Disable Particles for Future Mystery Boxes ( default: OFF )", "mbd_mysterybox_bo3_ravo_disableAllParticlesEffects" )
 
                 local teddybearGetChance_TotallyCustomValueAllowed = addItemBoolean( "Teddybear Probability - Custom Value Allowed? ( default: OFF )", "mbd_mysterybox_bo3_ravo_teddybearGetChance_TotallyCustomValueAllowed", 10 )
-                local teddybearGetChance = addItemDynamicInt( "Teddybear Probability ( value > 0, will give no teddybear. Lower == More Likely ) ( when \"Custom Value Allowed\" is set to 'OFF', it will adjust automatically )", "mbd_mysterybox_bo3_ravo_teddybearGetChance", nil, -100, 1 )
+                local teddybearGetChance = addItemDynamicInt( "Teddybear Probability ( value > 0, will give no teddybear. Lower == More Likely ) ( when \"Custom Value Allowed\" is set to 'OFF', it will adjust automatically )", "mbd_mysterybox_bo3_ravo_teddybearGetChance", nil, -150, 1 )
 
                 local hideAllNotificationsFromMysteryBox = addItemBoolean( "Hide Notifications ( default: OFF )", "mbd_mysterybox_bo3_ravo_hideAllNotificationsFromMysteryBox", 10 )
 

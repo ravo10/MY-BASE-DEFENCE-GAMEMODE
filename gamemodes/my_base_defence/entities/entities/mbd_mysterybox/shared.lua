@@ -36,7 +36,7 @@ function ENT:SetupDataTables()
     self:NetworkVar("Float", 1, "MysteryboxPriceToBuy")
 
     self:NetworkVar("Int", 0, "AmountOfUses")
-    
+
     if SERVER then
         --- Set First Time
         self:SetRemoveIdleTimerID("mbd:removeIdleTimerID001"..self:EntIndex())
@@ -50,30 +50,26 @@ function ENT:SetupDataTables()
 
         local currHealthConVar = GetConVar("mbd_mysterybox_bo3_ravo_MysteryBoxTotalHealth"):GetInt()
         if currHealthConVar > 0 then
-            self:SetMysteryboxHealth(currHealthConVar)
+            self:SetMysteryboxHealth( currHealthConVar )
         else
-            self:SetMysteryboxHealth(-1)
+            self:SetMysteryboxHealth( -1 )
         end
-        self:SetMysteryboxPriceToBuy(950)
+
+        self:SetMysteryboxPriceToBuy(950) -- Can be used if you want to add a price for a gamemode etc.
         self:SetAmountOfUses(0)
     end
 end
 --- - -
-hook.Add("PhysgunPickup", "mbd:PhysgunPickupMysteryBoxRavo001", function(pl, ent)
+hook.Add( "PhysgunPickup", "mbd:PhysgunPickupMysteryBoxRavo001", function(pl, ent)
+
     if ent:GetClass() == "mbd_mysterybox" then
-        -- 
-        if (
-            ent:GetCanUseBox() and (
-                not pl:IsAdmin() or
-                not pl:IsSuperAdmin()
-            )
-        ) then
-            return false
-        elseif (
-            not pl:IsAdmin() or
-            not pl:IsSuperAdmin()
-        ) then
-            return false
-        end
+
+        local canUseBox = ent:GetCanUseBox()
+
+        if not pl:IsAdmin() and not pl:IsSuperAdmin() then return false end
+
+        if not ent:GetCanUseBox() then return false end
+
     end
-end)
+
+end )

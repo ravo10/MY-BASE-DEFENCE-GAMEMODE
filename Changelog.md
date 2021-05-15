@@ -12,6 +12,27 @@
 
 # Stable
 
+### 0.0.2062 ( 15.05.21 )
+* Mystery Box:
+    * Improved the logic for when a Player is taking a weapon from the box
+    * Fixed a bug where when a SWEP was removed from the list, it would not get saved locally for viewing
+    * Improved performance of editing SWEP list in*game
+    * Fixed the fallback name of a SWEP to its class
+    * Added new fallback model, if the world model is not valid
+    * Fixed angle settings for SWEP in Mystery Box
+    * Added new notification when picking up a SWEP
+    * Added so the if the SWEP is pressed "E" on, it will get equiped ( not only the Mystery Box )
+    * Added so the current sound playing from the Mystery Box will stop when the Mystery box is removed
+    * Fixed some pickup logic with the physgun
+    * Fixed some collision bugs with the SWEP from the Mystery Box
+    * Adjusted and fine tuned the cycle of SWEPs for the Mystery Box
+    * Fixed a bug where you would not receive ammo properly
+    * Added so if a Player takes a SWEP, the ammo for that SWEP will get removed ( for balance reasons )
+    * Removed so the SWEP model will no longer get smaller ( more like stock Mystery Box )
+    * Added a loader for checking if table for editable SWEPs is valid
+    * Added check for notification, so it only tells Player that ammo was given if the SWEP actually uses ammo
+    * Moved selection of current SWEP taken further down in code and added a small delay
+
 ### 0.0.2061 ( 13.05.21 )
 * Updated new particles for Mystery Box + fixed some bugs
 * Added Context Menu ( Hold 'C' ) for Mystery Box, so ConVar settings can be adjusted easily
